@@ -7,6 +7,7 @@
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link rel="stylesheet" href="assets/style.css">
 <script>document.documentElement.dataset.theme = localStorage.getItem("pw_theme") || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");</script>
+<script src="assets/i18n.js"></script>
 </head>
 <body data-page="overview" data-root="">
 <div id="site-header"></div>
@@ -34,23 +35,23 @@
     <div class="card">
       <h2>Prognoza ryzyka w czasie</h2>
       <div class="placeholder tall" id="chart-risk-timeline">
-        📈 Wykres liniowy: ryzyko awarii vs czas (+ markery eventów i incydentów)
+        <i data-ic="chart-line"></i> Wykres liniowy: ryzyko awarii vs czas (+ markery eventów i incydentów)
         <code>TODO: Plotly / Chart.js → GET /api/risk?service=...&amp;from=...&amp;to=...</code>
       </div>
     </div>
     <div class="card">
       <h2>Ryzyko per usługa</h2>
       <div class="placeholder tall" id="chart-service-heatmap">
-        🟥🟨🟩 Heatmapa / ranking usług
+        <i data-ic="heatmap"></i> Heatmapa / ranking usług
         <code>TODO: GET /api/risk/services</code>
       </div>
     </div>
   </div>
 
   <div class="grid cols-3">
-    <div class="card"><h2>Latency p95</h2><div class="placeholder" id="chart-latency">📉 Wykres metryki<code>TODO: GET /api/metrics/latency</code></div></div>
-    <div class="card"><h2>Error rate</h2><div class="placeholder" id="chart-errors">📉 Wykres metryki<code>TODO: GET /api/metrics/errors</code></div></div>
-    <div class="card"><h2>Ruch / liczba widzów</h2><div class="placeholder" id="chart-traffic">📉 Wykres metryki<code>TODO: GET /api/metrics/traffic</code></div></div>
+    <div class="card"><h2>Latency p95</h2><div class="placeholder" id="chart-latency"><i data-ic="chart-line"></i> Wykres metryki<code>TODO: GET /api/metrics/latency</code></div></div>
+    <div class="card"><h2>Error rate</h2><div class="placeholder" id="chart-errors"><i data-ic="chart-line"></i> Wykres metryki<code>TODO: GET /api/metrics/errors</code></div></div>
+    <div class="card"><h2>Ruch / liczba widzów</h2><div class="placeholder" id="chart-traffic"><i data-ic="chart-line"></i> Wykres metryki<code>TODO: GET /api/metrics/traffic</code></div></div>
   </div>
 </main>
 

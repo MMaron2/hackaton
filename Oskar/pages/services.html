@@ -7,6 +7,7 @@
 <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 <link rel="stylesheet" href="../assets/style.css">
 <script>document.documentElement.dataset.theme = localStorage.getItem("pw_theme") || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");</script>
+<script src="../assets/i18n.js"></script>
 </head>
 <body data-page="services" data-root="../">
 <div id="site-header"></div>
@@ -22,10 +23,10 @@
   </div>
   <div class="grid cols-2">
     <div class="card"><h2>Ryzyko usługi w czasie</h2>
-      <div class="placeholder tall" id="chart-service-risk">📈 Wykres po wybraniu usługi<code>TODO: GET /api/risk?service=...</code></div>
+      <div class="placeholder tall" id="chart-service-risk"><i data-ic="chart-line"></i> Wykres po wybraniu usługi<code>TODO: GET /api/risk?service=...</code></div>
     </div>
     <div class="card"><h2>Zależności usług</h2>
-      <div class="placeholder tall" id="chart-service-deps">🕸️ Graf zależności (CDN → origin → auth …)<code>TODO</code></div>
+      <div class="placeholder tall" id="chart-service-deps"><i data-ic="network"></i> Graf zależności (CDN → origin → auth …)<code>TODO</code></div>
     </div>
   </div>
 </main>

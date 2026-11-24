@@ -38,7 +38,7 @@
       <div class="main">${alertBadge({ source: { kind: "vendor", name: id }, level: l }, 22)} <b>${esc(id)}</b> <span class="muted small">${esc(v.component)}</span>
         <div class="small">${n ? `<b class="${l}">${plProblems(n)}</b> · ` : ""}${esc(v.note)}${v.since !== "—" ? ` <span class="muted">(od ${v.since})</span>` : ""}</div></div>
       <span class="badge ${l}">${STATUS_LABEL[v.status]}</span>
-      <button class="unpin" data-unpin title="Odepnij" aria-label="Odepnij">✕</button><span class="chev" aria-hidden="true">${op ? "▴" : "▾"}</span>
+      <button class="unpin" data-unpin title="Odepnij" aria-label="Odepnij">${icon("close")}</button><span class="chev" aria-hidden="true">${op ? "▴" : "▾"}</span>
       ${op ? `<div class="detail">${vendorProblemsHtml(v)}</div>` : ""}</li>`;
   }
 
@@ -49,7 +49,7 @@
       <div class="main">${channelIcon(id, 22)} <b>${esc(id)}</b>
         <div class="small muted">${live ? `${fmt(live.viewers)} widzów live · ${live.trend >= 0 ? "▲" : "▼"} ${Math.abs(live.trend)}%/15 min · ${live.bandwidth} Tbps` : "Brak danych live (kanał poza Top 5 ruchu)"}</div></div>
       ${live ? `<span class="badge ${l}">CDN ${live.cdnLoad}%</span>` : ""}
-      <button class="unpin" data-unpin title="Odepnij" aria-label="Odepnij">✕</button></li>`;
+      <button class="unpin" data-unpin title="Odepnij" aria-label="Odepnij">${icon("close")}</button></li>`;
   }
 
   function eventRow(id) {
@@ -60,7 +60,7 @@
       <div class="main"><span class="cicon" style="width:22px;height:22px;font-size:10px;background:#2b303b;color:#fff">${e.date.slice(8)}</span> <b>${esc(e.name)}</b>
         <div class="small muted">${e.date} · ${when(n)}${e.note ? " · " + esc(e.note) : ""}</div></div>
       <span class="badge ${l}">${e.kind}</span>
-      <button class="unpin" data-unpin title="Odepnij" aria-label="Odepnij">✕</button></li>`;
+      <button class="unpin" data-unpin title="Odepnij" aria-label="Odepnij">${icon("close")}</button></li>`;
   }
 
   // ---- Szkielet (budowany raz) ----

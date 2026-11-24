@@ -7,6 +7,7 @@
 <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 <link rel="stylesheet" href="../assets/style.css">
 <script>document.documentElement.dataset.theme = localStorage.getItem("pw_theme") || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");</script>
+<script src="../assets/i18n.js"></script>
 </head>
 <body data-page="player" data-root="../">
 <div id="site-header"></div>
@@ -27,8 +28,8 @@
       <div class="player">
         <span class="live">● LIVE</span>
         <div class="hud" id="player-hud">res: --<br>bitrate: --<br>buffer: --<br>dropped: --</div>
-        <div class="play">▶</div>
-        <div class="controls"><span>▶</span><div class="bar"><div class="buf"></div><div class="pos"></div></div><span>01:12:45</span><span>🔊 ⚙ ⛶</span></div>
+        <div class="play"><i data-ic="play"></i></div>
+        <div class="controls"><span><i data-ic="play"></i></span><div class="bar"><div class="buf"></div><div class="pos"></div></div><span>01:12:45</span><span class="pl-icons"><i data-ic="volume"></i><i data-ic="gear"></i><i data-ic="fullscreen"></i></span></div>
       </div>
       <p style="color:var(--muted);font-size:12px;margin:10px 0 0">Tu można osadzić prawdziwy player (np. hls.js / Shaka / Video.js) i zbierać zdarzenia: <code>waiting</code>, <code>stalled</code>, <code>error</code>, zmiany jakości.</p>
     </div>
@@ -39,9 +40,9 @@
   </div>
 
   <div class="grid cols-3">
-    <div class="card"><h2>Rebuffering w czasie</h2><div class="placeholder" id="chart-player-rebuf">📉 Wykres<code>TODO: GET /api/player/rebuffering</code></div></div>
-    <div class="card"><h2>Bitrate / zmiany jakości</h2><div class="placeholder" id="chart-player-bitrate">📉 Wykres<code>TODO: GET /api/player/bitrate</code></div></div>
-    <div class="card"><h2>Błędy wg CDN / regionu / urządzenia</h2><div class="placeholder" id="chart-player-errors">📊 Wykres<code>TODO: GET /api/player/errors</code></div></div>
+    <div class="card"><h2>Rebuffering w czasie</h2><div class="placeholder" id="chart-player-rebuf"><i data-ic="chart-line"></i> Wykres<code>TODO: GET /api/player/rebuffering</code></div></div>
+    <div class="card"><h2>Bitrate / zmiany jakości</h2><div class="placeholder" id="chart-player-bitrate"><i data-ic="chart-line"></i> Wykres<code>TODO: GET /api/player/bitrate</code></div></div>
+    <div class="card"><h2>Błędy wg CDN / regionu / urządzenia</h2><div class="placeholder" id="chart-player-errors"><i data-ic="chart-bar"></i> Wykres<code>TODO: GET /api/player/errors</code></div></div>
   </div>
 </main>
 

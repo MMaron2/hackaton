@@ -86,7 +86,7 @@
 
   function renderDd() {
     const restoreFocus = captureSearchFocus();   // lista odświeża się co 3 s – kursor w polu szukania zostaje
-    $("dd-updated").textContent = "· aktualizacja " + new Date(updated).toLocaleTimeString("pl-PL");
+    $("dd-updated").textContent = "· aktualizacja " + new Date(updated).toLocaleTimeString(LOCALE);
     $("dd-list").innerHTML = [...SERVICES].sort((a, b) => a.name.localeCompare(b.name, "pl")).map(d => {
       const s = state[d.id], l = lvl(s.v, d.base), open = ddOpen.has(d.id);
       return `<li class="item clickable ${l}" data-id="${d.id}" tabindex="0" aria-expanded="${open}">
@@ -102,6 +102,8 @@
   // Cały wiersz jest klikalny (poza rozwiniętym panelem); wszystko startuje zwinięte
   const toggleDd = li => { ddOpen.has(li.dataset.id) ? ddOpen.delete(li.dataset.id) : ddOpen.add(li.dataset.id); renderDd(); };
   $("dd-list").addEventListener("click", e => {
+    const hs = e.target.closest("[data-hs-toggle]");   // lupka: pokaż / schowaj szukanie w historii
+    if (hs) { toggleHistSearch(hs.dataset.hsToggle, renderDd); return; }
     const more = e.target.closest("[data-more]");   // „Pokaż starsze"
     if (more) { histShown[more.dataset.more] = (histShown[more.dataset.more] || HIST_STEP) + HIST_STEP; renderDd(); return; }
     if (e.target.closest(".detail")) return;
@@ -113,6 +115,7 @@
     if (s) { histQuery[s.dataset.hsearch] = s.value; renderDd(); }
   });
   $("dd-list").addEventListener("keydown", e => {
+    if (e.key === "Escape" && e.target.dataset && e.target.dataset.hsearch) { toggleHistSearch(e.target.dataset.hsearch, renderDd); return; }
     if ((e.key === "Enter" || e.key === " ") && e.target.matches("li.item")) { e.preventDefault(); toggleDd(e.target); }
   });
 

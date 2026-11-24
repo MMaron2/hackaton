@@ -18,6 +18,28 @@ const NAV = [
 
 // Ikona logo: „hub" – węzeł centralny połączony z pięcioma źródłami informacji (ten sam motyw co ikona karty)
 const LOGO_HTML = `<svg class="logo-ico" viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="8" fill="currentColor"/><g stroke="var(--logo-ink, #03182f)" stroke-width="2" stroke-linecap="round"><path d="M16 16 16 6.5M16 16 25 12.5M16 16 22 24.5M16 16 10 24.5M16 16 7 12.5"/></g><g fill="var(--logo-ink, #03182f)"><circle cx="16" cy="6.5" r="2.6"/><circle cx="25" cy="12.5" r="2.6"/><circle cx="22" cy="24.5" r="2.6"/><circle cx="10" cy="24.5" r="2.6"/><circle cx="7" cy="12.5" r="2.6"/><circle cx="16" cy="16" r="4.4"/></g><circle cx="16" cy="16" r="1.7" fill="currentColor"/></svg><span class="logo-text">info<span>hub</span></span>`;
+// Prosta lupa wektorowa (kolor dziedziczy z tekstu) – używana w polach i przyciskach wyszukiwania
+const SEARCH_SVG = `<svg class="ico-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M20 20l-4.6-4.6"/></svg>`;
+// Zestaw prostych ikon wektorowych (linie, kolor z tekstu) – zastępują emoji. icon("bell") zwraca gotowe SVG;
+// w statycznym HTML wystarczy <i data-ic="bell"></i>, a skrypt wstawi ikonę.
+const ICON_PATHS = {
+  bell: '<path d="M6 9a6 6 0 0 1 12 0c0 6 2.5 7.5 2.5 7.5h-17S6 15 6 9"/><path d="M10 20a2 2 0 0 0 4 0"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  moon: '<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>',
+  login: '<path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/><path d="M4 12h11M11 8l4 4-4 4"/>',
+  "chart-line": '<path d="M4 4v16h16"/><path d="M7 15l4-5 3 3 5-7"/>',
+  "chart-bar": '<path d="M4 4v16h16"/><path d="M8 16v-5M12 16V8M16 16v-9"/>',
+  heatmap: '<rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/>',
+  network: '<circle cx="12" cy="5" r="2"/><circle cx="5" cy="18" r="2"/><circle cx="19" cy="18" r="2"/><path d="M11 7l-5 9M13 7l5 9M7 18h10"/>',
+  play: '<path d="M8 5l11 7-11 7z"/>',
+  app: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 9h18M7 7h.01M10 7h.01"/>',
+  volume: '<path d="M4 10v4h3l5 4V6l-5 4z"/><path d="M16 9a4 4 0 0 1 0 6"/>',
+  gear: '<circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/>',
+  fullscreen: '<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>',
+  close: '<path d="M6 6l12 12M18 6L6 18"/>'
+};
+const icon = name => `<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON_PATHS[name] || ""}</svg>`;
+document.querySelectorAll("i[data-ic]").forEach(el => { el.innerHTML = icon(el.dataset.ic); });
 // Nagłówek: logo + wyszukiwarka i akcje, pod spodem przyklejony pasek działów
 document.getElementById("site-header").innerHTML = `
   <header class="masthead">
@@ -26,11 +48,11 @@ document.getElementById("site-header").innerHTML = `
       <small class="meta">Dane: <span id="data-source">PLACEHOLDER (Snowflake niepodłączony)</span> · Aktualizacja: <span id="last-update">—</span></small></span>
     <div class="top-right">
       <div class="dd-wrap">
-        <label class="search"><input id="search-input" type="search" placeholder="Szukaj usługi lub incydentu" autocomplete="off"><span>🔍</span></label>
+        <label class="search"><input id="search-input" type="search" placeholder="Szukaj usługi lub incydentu" autocomplete="off">${SEARCH_SVG}</label>
         <div id="search-results" class="dropdown" hidden></div>
       </div>
       <div class="dd-wrap">
-        <button id="bell" class="btn-link bell" title="Powiadomienia" aria-label="Powiadomienia">🔔<span id="bell-count" class="count" hidden>0</span></button>
+        <button id="bell" class="btn-link bell" title="Powiadomienia" aria-label="Powiadomienia">${icon("bell")}<span id="bell-count" class="count" hidden>0</span></button>
         <div id="notif-panel" class="dropdown notif" hidden>
           <div class="dd-head"><strong>Powiadomienia</strong><button id="notif-readall" class="link-small">Oznacz jako przeczytane</button></div>
           <div id="notif-list"></div>
@@ -38,7 +60,8 @@ document.getElementById("site-header").innerHTML = `
         </div>
       </div>
       <button id="theme-toggle" class="btn-link theme-toggle" type="button"></button>
-      <button class="btn-link">⎆ Zaloguj</button>
+      <select id="lang-select" class="lang-select" aria-label="Język / Language / Sprache"><option value="pl">PL</option><option value="en">EN</option><option value="de">DE</option></select>
+      <button class="btn-link login-btn">${icon("login")} Zaloguj</button>
       <button class="btn-cta">Zgłoś incydent</button>
     </div>
   </header>
@@ -52,7 +75,7 @@ document.getElementById("site-header").innerHTML = `
   const btn = document.getElementById("theme-toggle"), root = document.documentElement;
   const paint = () => {
     const light = root.dataset.theme === "light";
-    btn.textContent = light ? "🌙" : "☀️";
+    btn.innerHTML = icon(light ? "moon" : "sun");
     btn.title = btn.ariaLabel = light ? "Przełącz na tryb ciemny" : "Przełącz na tryb jasny";
   };
   btn.addEventListener("click", () => {
@@ -61,6 +84,13 @@ document.getElementById("site-header").innerHTML = `
     paint();
   });
   paint();
+})();
+
+// Wybór języka (PL / EN / DE): zapis w przeglądarce i przeładowanie strony – tłumaczy assets/i18n.js
+(function () {
+  const sel = document.getElementById("lang-select");
+  sel.value = window.LANG || "pl";
+  sel.addEventListener("change", () => { localStorage.setItem("pw_lang", sel.value); location.reload(); });
 })();
 
 document.getElementById("site-footer").innerHTML =
@@ -134,7 +164,7 @@ const $ = id => document.getElementById(id);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[c]));   // dane od vendorów są niezaufane
 const stripHtml = h => new DOMParser().parseFromString(String(h || ""), "text/html").body.textContent.trim();
 const setText = (id, v) => { const el = $(id); if (el) el.textContent = v; };
-const fmt = n => n.toLocaleString("pl-PL");
+const fmt = n => n.toLocaleString(LOCALE);
 
 let appData = mock;   // aktualne dane – używane przez wyszukiwarkę i powiadomienia
 
@@ -144,7 +174,7 @@ async function load() {
   renderNotifs();
   updateNavDots();
   renderVendors();
-  setText("last-update", new Date().toLocaleString("pl-PL"));
+  setText("last-update", new Date().toLocaleString(LOCALE));
   if (!USE_MOCK) setText("data-source", "Snowflake");
 
   // Przegląd
@@ -220,7 +250,7 @@ if (USE_MOCK && $("player-events")) {
   setInterval(() => {
     const [name, lvl] = evTypes[Math.floor(Math.random() * evTypes.length)];
     const row = document.createElement("div");
-    row.innerHTML = `<span style="color:var(--muted)">${new Date().toLocaleTimeString("pl-PL")}</span> <span class="${lvl}">${name}</span> <span style="color:var(--muted)">sess=${Math.random().toString(36).slice(2, 8)}</span>`;
+    row.innerHTML = `<span style="color:var(--muted)">${new Date().toLocaleTimeString(LOCALE)}</span> <span class="${lvl}">${name}</span> <span style="color:var(--muted)">sess=${Math.random().toString(36).slice(2, 8)}</span>`;
     evBox.prepend(row);
     while (evBox.children.length > 40) evBox.lastChild.remove();
     hud.innerHTML = `res: ${["1080p", "720p", "480p"][Math.floor(Math.random() * 3)]}<br>bitrate: ${(3 + Math.random() * 4).toFixed(1)} Mbps<br>buffer: ${(2 + Math.random() * 20).toFixed(1)} s<br>dropped: ${Math.floor(Math.random() * 30)}`;
@@ -254,7 +284,7 @@ const sInput = $("search-input"), sBox = $("search-results");
 function runSearch() {
   const q = norm(sInput.value.trim());
   if (!q) { sBox.hidden = true; return; }
-  const res = buildIndex().filter(e => norm(e.title + " " + e.key + " " + e.type).includes(q)).slice(0, 8);
+  const res = buildIndex().filter(e => norm(`${e.title} ${e.key} ${e.type} ${T(e.title)} ${T(e.type)}`).includes(q)).slice(0, 8);   // szuka też po tłumaczeniach
   sBox.innerHTML = res.length
     ? res.map(e => `<a class="dd-item" href="${e.href}" data-focus="${esc(e.focus || "")}"><span class="tag">${e.type}</span>${e.icon || ""}<span><b>${esc(e.title)}</b>${e.sub ? `<br><small>${esc(e.sub)}</small>` : ""}</span></a>`).join("")
     : `<div class="dd-empty">Brak wyników dla „${esc(sInput.value)}"</div>`;
@@ -301,7 +331,7 @@ function renderNotifs() {
       setText("kpi-alerts", list.length);
       setKpi("alerts", KPI_COLOR[list.length ? "crit" : "ok"], list.length ? "crit" : "ok", list.length ? "DO REAKCJI" : "BRAK");
     }
-    const hhmm = ts => new Date(ts).toLocaleTimeString("pl-PL", { hour: "2-digit", minute: "2-digit" });
+    const hhmm = ts => new Date(ts).toLocaleTimeString(LOCALE, { hour: "2-digit", minute: "2-digit" });
     const act = [...list].sort((a, b) => ((a.level === "crit" ? 0 : 1) - (b.level === "crit" ? 0 : 1)) || b.ts - a.ts);
     const nc = act.filter(a => a.level === "crit").length, nw = act.length - nc;
     $("attention-card").className = "card attention " + (nc ? "crit" : nw ? "warn" : "ok");
@@ -341,7 +371,7 @@ function pushAlert(a) {
   t.addEventListener("click", () => { t.remove(); openAlert(a); });
   box.appendChild(t); setTimeout(() => t.remove(), 7000);
   if ("Notification" in window && Notification.permission === "granted") {
-    const n = new Notification(a.title, { body: a.text, icon: alertIconUrl(a), tag: a.id });
+    const n = new Notification(T(a.title), { body: T(a.text), icon: alertIconUrl(a), tag: a.id });
     n.onclick = () => { window.focus(); n.close(); openAlert(a); };
   }
 }
@@ -540,7 +570,7 @@ const COMP_STATUS = {
 };
 const IMPACT_LABEL = { none: ["ok", "Bez wpływu"], minor: ["warn", "Niski wpływ"], major: ["crit", "Wysoki wpływ"], critical: ["crit", "Krytyczny"], maintenance: ["unk", "Prace serwisowe"] };
 const INC_STATUS = { resolved: "Rozwiązany", investigating: "Badany", identified: "Zidentyfikowany", monitoring: "Monitorowany", postmortem: "Podsumowanie", update: "Aktualizacja", scheduled: "Zaplanowany", in_progress: "W toku", completed: "Zakończony" };
-const fmtDate = iso => new Date(iso).toLocaleString("pl-PL", { dateStyle: "short", timeStyle: "short" });
+const fmtDate = iso => new Date(iso).toLocaleString(LOCALE, { dateStyle: "short", timeStyle: "short" });
 
 // ----- Historia incydentów jako oś czasu (wspólna dla dostawców i Downdetectora) -----
 const HIST_STEP = 8;      // ile wpisów pokazujemy na raz; „Pokaż starsze" dokłada kolejne
@@ -558,7 +588,7 @@ function timelineHtml(incidents, shown) {
     const ongoing = !i.resolved && ["investigating", "identified", "monitoring", "in_progress"].includes(i.status);
     const dur = i.resolved ? fmtMins(Math.max(1, Math.round((new Date(i.resolved) - d) / 60000))) : "";
     html += `<div class="tl-item ${l}${ongoing ? " ongoing" : ""}">
-      <div class="tl-head"><time>${d.toLocaleString("pl-PL", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}</time>
+      <div class="tl-head"><time>${d.toLocaleString(LOCALE, { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}</time>
         <span class="badge ${l}">${t}</span>
         ${ongoing ? '<span class="tl-live">trwa</span>' : `<span class="tl-state">${INC_STATUS[i.status] || esc(i.status)}${dur ? ` · trwał ${dur}` : ""}</span>`}</div>
       <div class="tl-title">${esc(i.name)}</div>
@@ -569,12 +599,24 @@ function timelineHtml(incidents, shown) {
 
 // Sekcja historii z przyciskiem „Pokaż starsze" i linkiem do pełnej historii u źródła
 const histQuery = {};     // klucz (vendor / serwis) → tekst wpisany w „Szukaj w historii"
+const histSearchOpen = new Set();   // klucze z rozwiniętym polem szukania (domyślnie schowane pod lupką)
+
+// Lupka przy „Historia incydentów": pokazuje pole szukania i ustawia w nim kursor; ponowne kliknięcie chowa je i czyści filtr
+function toggleHistSearch(key, render) {
+  if (histSearchOpen.has(key) || histQuery[key]) { histSearchOpen.delete(key); delete histQuery[key]; render(); return; }
+  histSearchOpen.add(key); render();
+  const el = document.querySelector(`[data-hsearch="${CSS.escape(key)}"]`);
+  if (el) el.focus();
+}
+
 function historySectionHtml(key, incidents, fullUrl, fullLabel) {
   const q = norm((histQuery[key] || "").trim());
   const list = q ? incidents.filter(i => norm(`${i.name} ${i.desc || ""} ${fmtDate(i.created)}`).includes(q)) : incidents;
   const total = list.length, shown = Math.min(histShown[key] || HIST_STEP, total), rest = total - shown;
-  return `<h4>Historia incydentów <span class="tl-count">${q ? `${total} z ${incidents.length} pasuje` : `${shown} z ${total}`}</span></h4>
-    ${incidents.length ? `<input type="search" class="hist-search" data-hsearch="${esc(key)}" value="${esc(histQuery[key] || "")}" placeholder="Szukaj w historii (nazwa, opis, data)…" autocomplete="off">` : ""}
+  const open = histSearchOpen.has(key) || !!q;
+  return `<h4 class="hist-head">Historia incydentów <span class="tl-count">${q ? `${total} z ${incidents.length} pasuje` : `${shown} z ${total}`}</span>${incidents.length
+      ? `<button class="icon-btn${open ? " on" : ""}" data-hs-toggle="${esc(key)}" title="Szukaj w historii" aria-label="Szukaj w historii" aria-expanded="${open}">${SEARCH_SVG}</button>` : ""}</h4>
+    ${incidents.length && open ? `<input type="search" class="hist-search" data-hsearch="${esc(key)}" value="${esc(histQuery[key] || "")}" placeholder="Szukaj w historii (nazwa, opis, data)…" autocomplete="off">` : ""}
     ${total ? `<div class="timeline">${timelineHtml(list, shown)}</div>` : `<div class="muted small">${q ? "Brak zdarzeń pasujących do zapytania." : "Brak zdarzeń w historii."}</div>`}
     <div class="hist-actions">${rest > 0 ? `<button class="more-btn" data-more="${esc(key)}">Pokaż starsze (+${Math.min(HIST_STEP, rest)})</button>` : ""}
       ${fullUrl ? `<a class="link-small" href="${esc(fullUrl)}" target="_blank" rel="noopener">${fullLabel} ↗</a>` : ""}</div>`;
@@ -652,6 +694,8 @@ if (vendorsGridEl) {
   vendorsGridEl.addEventListener("click", e => {
     const sub = e.target.closest("[data-sub]");
     if (sub) { toggleSub(sub); return; }
+    const hs = e.target.closest("[data-hs-toggle]");   // lupka: pokaż / schowaj szukanie w historii
+    if (hs) { toggleHistSearch(hs.dataset.hsToggle, renderVendors); return; }
     const more = e.target.closest("[data-more]");   // „Pokaż starsze" w historii incydentów
     if (more) { histShown[more.dataset.more] = (histShown[more.dataset.more] || HIST_STEP) + HIST_STEP; renderVendors(); return; }
     if (e.target.closest("a") || e.target.closest(".detail")) return;
@@ -663,6 +707,7 @@ if (vendorsGridEl) {
     if (s) { histQuery[s.dataset.hsearch] = s.value; renderVendors(); }
   });
   vendorsGridEl.addEventListener("keydown", e => {
+    if (e.key === "Escape" && e.target.dataset && e.target.dataset.hsearch) { toggleHistSearch(e.target.dataset.hsearch, renderVendors); return; }
     if (e.key !== "Enter" && e.key !== " ") return;
     if (e.target.dataset && e.target.dataset.sub) { e.preventDefault(); toggleSub(e.target); }
     else if (e.target.classList.contains("vrow")) { e.preventDefault(); toggleVendor(e.target); }
@@ -749,7 +794,7 @@ async function liveStatuspage(src) {
   const outages = status === "ok" ? [] : incs.map(i => ({
     service: i.components && i.components.length ? i.components.slice(0, 3).map(c => c.name).join(", ") + (i.components.length > 3 ? ` +${i.components.length - 3}` : "") : i.name,
     title: i.name, status: i.impact === "minor" ? "degraded" : "down", since: i.created_at,
-    description: (i.incident_updates || []).map(u => `[${fmtDate(u.created_at)}] ${INC_STATUS[u.status] || u.status}: ${stripHtml(u.body)}`).join("\n\n") || i.name,
+    description: (i.incident_updates || []).map(u => `[${fmtDate(u.created_at)}] ${T(INC_STATUS[u.status] || u.status)}: ${stripHtml(u.body)}`).join("\n\n") || i.name,
     url: i.shortlink || src.base
   }));
   return { status, note, sinceMin, outages };
@@ -832,7 +877,7 @@ async function refreshVendors() {
   if (!vs) return;
   await Promise.all(vs.map(refreshVendor));
   await Promise.all(vs.filter(v => vendorOpen.has(v.name)).map(loadVendorHistory));   // odśwież rozwiniętą historię
-  setText("last-update", new Date().toLocaleString("pl-PL"));
+  setText("last-update", new Date().toLocaleString(LOCALE));
   renderVendors(); updateNavDots(); renderNotifs();
 }
 
