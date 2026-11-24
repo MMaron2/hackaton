@@ -16,10 +16,12 @@ const NAV = [
   ["model",     "Model",     "pages/model.html"]
 ];
 
+// Ikona logo: „hub" – węzeł centralny połączony z pięcioma źródłami informacji (ten sam motyw co ikona karty)
+const LOGO_HTML = `<svg class="logo-ico" viewBox="0 0 32 32" aria-hidden="true"><rect x="1" y="1" width="30" height="30" rx="8" fill="currentColor"/><g stroke="var(--logo-ink, #03182f)" stroke-width="2" stroke-linecap="round"><path d="M16 16 16 6.5M16 16 25 12.5M16 16 22 24.5M16 16 10 24.5M16 16 7 12.5"/></g><g fill="var(--logo-ink, #03182f)"><circle cx="16" cy="6.5" r="2.6"/><circle cx="25" cy="12.5" r="2.6"/><circle cx="22" cy="24.5" r="2.6"/><circle cx="10" cy="24.5" r="2.6"/><circle cx="7" cy="12.5" r="2.6"/><circle cx="16" cy="16" r="4.4"/></g><circle cx="16" cy="16" r="1.7" fill="currentColor"/></svg><span class="logo-text">info<span>hub</span></span>`;
 // Nagłówek: logo + wyszukiwarka i akcje, pod spodem przyklejony pasek działów
 document.getElementById("site-header").innerHTML = `
   <header class="masthead">
-    <a class="logo" href="${ROOT}index.html" title="Monitoring awarii i degradacji usług">radar<span>awarii</span></a>
+    <a class="logo" href="${ROOT}index.html" title="Monitoring awarii i degradacji usług">${LOGO_HTML}</a>
     <span class="tagline">Monitoring awarii i degradacji usług
       <small class="meta">Dane: <span id="data-source">PLACEHOLDER (Snowflake niepodłączony)</span> · Aktualizacja: <span id="last-update">—</span></small></span>
     <div class="top-right">
@@ -64,7 +66,7 @@ document.getElementById("site-header").innerHTML = `
 document.getElementById("site-footer").innerHTML =
   `<footer class="site-footer">
     <div class="foot-cols">
-      <div><span class="logo">radar<span>awarii</span></span><p>Monitoring awarii i degradacji usług.</p></div>
+      <div><span class="logo">${LOGO_HTML}</span><p>Monitoring awarii i degradacji usług.</p></div>
       <div><b>Działy</b><p>${NAV.map(([, name, href]) => `<a href="${ROOT}${href}">${name}</a>`).join("")}</p></div>
     </div>
     <div class="foot-note">Created using Anthropic Claude – wersja robocza, do weryfikacji przez człowieka przed użyciem poza środowiskiem wewnętrznym.</div>

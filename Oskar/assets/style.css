@@ -595,3 +595,20 @@ html[data-theme="dark"] .card { backdrop-filter: none; }
 .cal-search:focus, .hist-search:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
 .cal-day.match { outline: 3px solid var(--accent); outline-offset: -1px; }
 .cal-day.dim { opacity: .3; }
+
+/* Pierwsza pozycja menu („Przegląd"): podświetlenie nie jest już ucinane z lewej.
+   Zamiast ujemnego marginesu przesuwamy cały pasek, więc tekst nadal równa się z treścią strony,
+   a tło po najechaniu ma taki sam odstęp z obu stron jak pozostałe pozycje. */
+.navbar { padding-left: calc(var(--gutter) - 14px); }
+.navbar nav a:first-child { margin-left: 0; }
+
+/* Logo z ikoną */
+.logo { display: inline-flex; align-items: center; gap: .3em; }
+.logo-ico { width: 1.15em; height: 1.15em; flex: none; }
+.logo .logo-text { color: inherit; } .logo .logo-text span { color: var(--text); }
+.foot-cols .logo .logo-text { color: inherit; } .foot-cols .logo .logo-text span { color: #fff; }
+html[data-theme="light"] .masthead .logo { --logo-ink: #ffffff; }
+
+/* Cały nagłówek (logo + pasek działów) stoi w miejscu; przewija się tylko treść pod nim */
+#site-header { position: sticky; top: 0; z-index: 40; }
+.navbar { position: relative; top: auto; }

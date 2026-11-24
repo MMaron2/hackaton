@@ -1,4 +1,4 @@
-# Lokalny serwer Radar Awarii: serwuje pliki strony + proxy dla stron statusu vendorów (omija blokadę CORS).
+# Lokalny serwer InfoHub: serwuje pliki strony + proxy dla stron statusu vendorów (omija blokadę CORS).
 # Uruchom:  powershell -ExecutionPolicy Bypass -File server.ps1      (potem http://localhost:8080/)
 # Proxy: /proxy?u=<adres https>  – tylko hosty z listy $allowed (nie jest to otwarty proxy).
 param([int]$Port = 8080)
@@ -25,7 +25,7 @@ function Send($res, [int]$code, [byte[]]$bytes, [string]$type) {
 $listener = New-Object System.Net.HttpListener
 $listener.Prefixes.Add("http://localhost:$Port/")
 $listener.Start()
-Write-Host "Radar Awarii dziala: http://localhost:$Port/   (Ctrl+C aby zatrzymac)"
+Write-Host "InfoHub dziala: http://localhost:$Port/   (Ctrl+C aby zatrzymac)"
 
 try {
   while ($listener.IsListening) {
@@ -45,7 +45,7 @@ try {
             Send $res 403 ([Text.Encoding]::UTF8.GetBytes('host niedozwolony')) 'text/plain'
           }
           else {
-            $r = Invoke-WebRequest -Uri $uri -UseBasicParsing -TimeoutSec 15 -Headers @{ 'User-Agent' = 'radar-awarii-local-proxy' }
+            $r = Invoke-WebRequest -Uri $uri -UseBasicParsing -TimeoutSec 15 -Headers @{ 'User-Agent' = 'infohub-local-proxy' }
             $type = [string]$r.Headers['Content-Type']
             if (-not $type) { $type = 'application/octet-stream' }
             Send $res 200 $r.RawContentStream.ToArray() $type
