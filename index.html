@@ -6,17 +6,25 @@
 <title>Predykcyjne wykrywanie awarii – Dashboard</title>
 <style>
   :root {
-    --bg: #0f1420; --panel: #181f2f; --border: #26304a; --text: #e6eaf5;
-    --muted: #8a94b0; --accent: #4f8cff; --ok: #2ecc71; --warn: #f5a623; --crit: #ff5c5c;
+    --bg: #0a0a0b; --panel: #141416; --border: #26272b; --text: #ffffff;
+    --muted: #9a9ca3; --accent: #18e8a4; --ok: #18e8a4; --warn: #f5a623; --crit: #ff5c5c;
   }
   * { box-sizing: border-box; }
   body { margin: 0; font-family: Segoe UI, Roboto, Arial, sans-serif; background: var(--bg); color: var(--text); }
-  header { display: flex; justify-content: space-between; align-items: center; padding: 14px 24px; border-bottom: 1px solid var(--border); background: var(--panel); }
-  header h1 { font-size: 18px; margin: 0; }
-  header .meta { color: var(--muted); font-size: 13px; }
-  nav { display: flex; gap: 6px; padding: 10px 24px; border-bottom: 1px solid var(--border); }
-  nav button { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 6px 14px; border-radius: 6px; cursor: pointer; }
-  nav button.active, nav button:hover { color: var(--text); border-color: var(--accent); }
+  /* Górne menu w stylu player.pl: logo po lewej, linki, wyszukiwarka, przycisk CTA */
+  header.top { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 28px; padding: 14px 28px; background: linear-gradient(var(--bg) 70%, rgba(10,10,11,.0)); }
+  .logo { display: flex; align-items: center; gap: 6px; font-size: 30px; font-weight: 700; letter-spacing: -.03em; color: var(--accent); text-decoration: none; line-height: 1; }
+  .logo small { display: block; font-size: 10px; letter-spacing: .12em; color: var(--muted); font-weight: 600; text-transform: uppercase; }
+  nav { display: flex; gap: 22px; align-items: center; flex: 1; flex-wrap: wrap; }
+  nav button { background: transparent; border: 0; border-bottom: 2px solid transparent; color: var(--text); padding: 6px 0; font: inherit; font-size: 17px; font-weight: 500; cursor: pointer; }
+  nav button.active, nav button:hover { color: var(--accent); border-bottom-color: var(--accent); }
+  .top-right { display: flex; align-items: center; gap: 18px; }
+  .search { display: flex; align-items: center; justify-content: space-between; gap: 10px; border: 1px solid #fff; border-radius: 6px; padding: 9px 14px; width: 210px; color: var(--muted); font-size: 15px; background: transparent; }
+  .search input { background: transparent; border: 0; outline: 0; color: var(--text); width: 100%; font: inherit; }
+  .btn-link { background: none; border: 0; color: var(--text); font: inherit; font-size: 16px; cursor: pointer; }
+  .btn-cta { background: var(--accent); color: #04130d; border: 0; border-radius: 8px; padding: 12px 18px; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; font-size: 14px; cursor: pointer; }
+  .meta { color: var(--muted); font-size: 12px; padding: 0 28px 8px; }
+  @media (max-width: 1100px) { header.top { flex-wrap: wrap; } .search { width: 160px; } }
   main { padding: 24px; max-width: 1400px; margin: 0 auto; }
   .grid { display: grid; gap: 16px; }
   .kpis { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 16px; }
@@ -42,24 +50,42 @@
   th { color: var(--muted); font-weight: 600; }
   .badge { padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
   .badge.ok { background: rgba(46,204,113,.15); } .badge.warn { background: rgba(245,166,35,.15); } .badge.crit { background: rgba(255,92,92,.15); }
+  /* Motyw playera */
+  .player { position: relative; aspect-ratio: 16/9; background: #000; border-radius: 10px; overflow: hidden; border: 1px solid var(--border);
+    background-image: radial-gradient(circle at 50% 40%, #1b2440, #05070d); display: flex; align-items: center; justify-content: center; }
+  .player .play { width: 76px; height: 76px; border-radius: 50%; background: rgba(255,255,255,.12); display: flex; align-items: center; justify-content: center; font-size: 34px; cursor: pointer; }
+  .player .live { position: absolute; top: 12px; left: 12px; background: var(--crit); font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 4px; }
+  .player .hud { position: absolute; top: 12px; right: 12px; font: 11px/1.5 Consolas, monospace; background: rgba(0,0,0,.55); padding: 6px 10px; border-radius: 6px; color: #cfd8ff; }
+  .player .controls { position: absolute; left: 0; right: 0; bottom: 0; padding: 10px 14px; background: linear-gradient(transparent, rgba(0,0,0,.8)); display: flex; align-items: center; gap: 12px; font-size: 12px; }
+  .player .bar { flex: 1; height: 5px; background: rgba(255,255,255,.25); border-radius: 3px; position: relative; }
+  .player .bar .buf { position: absolute; inset: 0 auto 0 0; width: 62%; background: rgba(255,255,255,.35); border-radius: 3px; }
+  .player .bar .pos { position: absolute; inset: 0 auto 0 0; width: 45%; background: var(--accent); border-radius: 3px; }
+  .badge-src { font-size: 11px; color: var(--accent); border: 1px solid var(--accent); padding: 2px 8px; border-radius: 10px; margin-left: 8px; }
   .view { display: none; } .view.active { display: block; }
   footer { text-align: center; color: var(--muted); font-size: 12px; padding: 20px; }
 </style>
 </head>
 <body>
 
-<header>
-  <h1>⚡ Predykcyjne wykrywanie awarii i degradacji usług</h1>
-  <div class="meta">Dane: <span id="data-source">PLACEHOLDER (Snowflake niepodłączony)</span> · Ostatnia aktualizacja: <span id="last-update">—</span></div>
-</header>
+<header class="top">
+  <a class="logo" href="#" title="Predykcyjne wykrywanie awarii i degradacji usług">pulse<span style="color:var(--text)">watch</span></a>
 
 <nav>
   <button class="active" data-view="overview">Przegląd</button>
+  <button data-view="player">Player</button>
   <button data-view="services">Usługi</button>
   <button data-view="events">Eventy</button>
   <button data-view="incidents">Incydenty</button>
   <button data-view="model">Model</button>
 </nav>
+
+  <div class="top-right">
+    <label class="search"><input type="search" placeholder="Szukaj usługi lub incydentu"><span>🔍</span></label>
+    <button class="btn-link">⎆ Zaloguj</button>
+    <button class="btn-cta">Zgłoś incydent</button>
+  </div>
+</header>
+<div class="meta">Dane: <span id="data-source">PLACEHOLDER (Snowflake niepodłączony)</span> · Ostatnia aktualizacja: <span id="last-update">—</span></div>
 
 <main>
 
@@ -93,6 +119,40 @@
       <div class="card"><h2>Latency p95</h2><div class="placeholder" id="chart-latency">📉 Wykres metryki<code>TODO: GET /api/metrics/latency</code></div></div>
       <div class="card"><h2>Error rate</h2><div class="placeholder" id="chart-errors">📉 Wykres metryki<code>TODO: GET /api/metrics/errors</code></div></div>
       <div class="card"><h2>Ruch / liczba widzów</h2><div class="placeholder" id="chart-traffic">📉 Wykres metryki<code>TODO: GET /api/metrics/traffic</code></div></div>
+    </div>
+  </section>
+
+  <!-- PLAYER -->
+  <section id="player" class="view">
+    <div class="grid kpis">
+      <div class="card kpi"><h2>Rebuffering ratio</h2><div class="value warn" id="pl-rebuf">--</div><div class="sub">czas buforowania / czas oglądania</div></div>
+      <div class="card kpi"><h2>Startup time (p95)</h2><div class="value" id="pl-startup">--</div><div class="sub">kliknięcie play → pierwsza klatka</div></div>
+      <div class="card kpi"><h2>Śr. bitrate</h2><div class="value" id="pl-bitrate">--</div><div class="sub">adaptive streaming (ABR)</div></div>
+      <div class="card kpi"><h2>Błędy odtwarzania</h2><div class="value crit" id="pl-errors">--</div><div class="sub">% sesji z błędem</div></div>
+      <div class="card kpi"><h2>Aktywne sesje</h2><div class="value" id="pl-sessions">--</div><div class="sub">równoległych widzów</div></div>
+    </div>
+
+    <div class="grid cols-2">
+      <div class="card">
+        <h2>Podgląd playera <span class="badge-src">źródło: telemetria playera</span></h2>
+        <div class="player" id="player-mock">
+          <span class="live">● LIVE</span>
+          <div class="hud" id="player-hud">res: --<br>bitrate: --<br>buffer: --<br>dropped: --</div>
+          <div class="play">▶</div>
+          <div class="controls"><span>▶</span><div class="bar"><div class="buf"></div><div class="pos"></div></div><span id="player-time">01:12:45</span><span>🔊 ⚙ ⛶</span></div>
+        </div>
+        <p style="color:var(--muted);font-size:12px;margin:10px 0 0">Tu można osadzić prawdziwy player (np. hls.js / Shaka / Video.js) i zbierać zdarzenia: <code>waiting</code>, <code>stalled</code>, <code>error</code>, zmiany jakości.</p>
+      </div>
+      <div class="card">
+        <h2>Zdarzenia playera (live)</h2>
+        <div id="player-events" style="font:12px/1.7 Consolas,monospace;max-height:330px;overflow:auto"></div>
+      </div>
+    </div>
+
+    <div class="grid cols-3">
+      <div class="card"><h2>Rebuffering w czasie</h2><div class="placeholder" id="chart-player-rebuf">📉 Wykres<code>TODO: GET /api/player/rebuffering</code></div></div>
+      <div class="card"><h2>Bitrate / zmiany jakości</h2><div class="placeholder" id="chart-player-bitrate">📉 Wykres<code>TODO: GET /api/player/bitrate</code></div></div>
+      <div class="card"><h2>Błędy wg CDN / regionu / urządzenia</h2><div class="placeholder" id="chart-player-errors">📊 Wykres<code>TODO: GET /api/player/errors</code></div></div>
     </div>
   </section>
 
@@ -170,6 +230,7 @@
       { name: "Koszyk / płatności", risk: 15, factor: "—" },
       { name: "Wyszukiwarka", risk: 9, factor: "—" }
     ],
+    player: { rebuf: 1.8, startup: 3.2, bitrate: 4.6, errors: 0.9, sessions: 128400 },
     incidents: [
       { id: "INC-1001", service: "Streaming / CDN", start: "2026-10-04 20:41", detected: "2026-10-04 21:05", sev: "P1", model: "tak (+24 min)" },
       { id: "INC-1002", service: "Autoryzacja", start: "2026-10-11 18:10", detected: "2026-10-11 18:22", sev: "P2", model: "tak (+12 min)" },
@@ -189,6 +250,13 @@
     document.getElementById("last-update").textContent = new Date().toLocaleString("pl-PL");
     if (!USE_MOCK) document.getElementById("data-source").textContent = "Snowflake";
 
+    const p = data.player;
+    document.getElementById("pl-rebuf").textContent = p.rebuf + "%";
+    document.getElementById("pl-startup").textContent = p.startup + " s";
+    document.getElementById("pl-bitrate").textContent = p.bitrate + " Mbps";
+    document.getElementById("pl-errors").textContent = p.errors + "%";
+    document.getElementById("pl-sessions").textContent = p.sessions.toLocaleString("pl-PL");
+
     document.getElementById("services-table").innerHTML = data.services.map(s => {
       const l = level(s.risk);
       return `<tr><td>${s.name}</td><td class="${l}">${s.risk}%</td><td><span class="badge ${l}">${label[l]}</span></td><td>${s.factor}</td></tr>`;
@@ -199,6 +267,25 @@
     ).join("");
   }
   load();
+
+  // Symulacja telemetrii playera (do czasu podłączenia prawdziwego playera / strumienia danych)
+  // Docelowo: player wysyła zdarzenia (beacon/WebSocket) → backend → Snowflake → ten widok.
+  const evTypes = [
+    ["play", "ok"], ["quality_change 1080p→720p", "warn"], ["buffering_start", "warn"],
+    ["buffering_end", "ok"], ["stalled", "crit"], ["error MEDIA_ERR_NETWORK", "crit"], ["seek", "ok"]
+  ];
+  const evBox = document.getElementById("player-events");
+  const hud = document.getElementById("player-hud");
+  function tick() {
+    const [name, lvl] = evTypes[Math.floor(Math.random() * evTypes.length)];
+    const t = new Date().toLocaleTimeString("pl-PL");
+    const row = document.createElement("div");
+    row.innerHTML = `<span style="color:var(--muted)">${t}</span> <span class="${lvl}">${name}</span> <span style="color:var(--muted)">sess=${Math.random().toString(36).slice(2, 8)}</span>`;
+    evBox.prepend(row);
+    while (evBox.children.length > 40) evBox.lastChild.remove();
+    hud.innerHTML = `res: ${["1080p","720p","480p"][Math.floor(Math.random()*3)]}<br>bitrate: ${(3 + Math.random()*4).toFixed(1)} Mbps<br>buffer: ${(2 + Math.random()*20).toFixed(1)} s<br>dropped: ${Math.floor(Math.random()*30)}`;
+  }
+  if (USE_MOCK) setInterval(tick, 1500);
 
   // Miejsce na wstawianie wykresów, np.:
   // Plotly.newPlot("chart-risk-timeline", [...], {...});
