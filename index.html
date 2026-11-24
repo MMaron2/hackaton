@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Predykcyjne wykrywanie awarii – Dashboard</title>
+<style>
+  :root {
+    --bg: #0f1420; --panel: #181f2f; --border: #26304a; --text: #e6eaf5;
+    --muted: #8a94b0; --accent: #4f8cff; --ok: #2ecc71; --warn: #f5a623; --crit: #ff5c5c;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Segoe UI, Roboto, Arial, sans-serif; background: var(--bg); color: var(--text); }
+  header { display: flex; justify-content: space-between; align-items: center; padding: 14px 24px; border-bottom: 1px solid var(--border); background: var(--panel); }
+  header h1 { font-size: 18px; margin: 0; }
+  header .meta { color: var(--muted); font-size: 13px; }
+  nav { display: flex; gap: 6px; padding: 10px 24px; border-bottom: 1px solid var(--border); }
+  nav button { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 6px 14px; border-radius: 6px; cursor: pointer; }
+  nav button.active, nav button:hover { color: var(--text); border-color: var(--accent); }
+  main { padding: 24px; max-width: 1400px; margin: 0 auto; }
+  .grid { display: grid; gap: 16px; }
+  .kpis { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 16px; }
+  .cols-2 { grid-template-columns: 2fr 1fr; margin-bottom: 16px; }
+  .cols-3 { grid-template-columns: repeat(3, 1fr); margin-bottom: 16px; }
+  @media (max-width: 900px) { .cols-2, .cols-3 { grid-template-columns: 1fr; } }
+  .card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .card h2 { font-size: 14px; margin: 0 0 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+  .kpi .value { font-size: 30px; font-weight: 700; }
+  .kpi .sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .ok { color: var(--ok); } .warn { color: var(--warn); } .crit { color: var(--crit); }
+  /* Placeholder na wykres / aplikację */
+  .placeholder {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    border: 2px dashed var(--border); border-radius: 8px; color: var(--muted);
+    text-align: center; padding: 16px; min-height: 260px;
+    background: repeating-linear-gradient(45deg, transparent 0 12px, rgba(255,255,255,.015) 12px 24px);
+  }
+  .placeholder.tall { min-height: 360px; }
+  .placeholder code { color: var(--accent); font-size: 12px; margin-top: 6px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { text-align: left; padding: 8px; border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); font-weight: 600; }
+  .badge { padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+  .badge.ok { background: rgba(46,204,113,.15); } .badge.warn { background: rgba(245,166,35,.15); } .badge.crit { background: rgba(255,92,92,.15); }
+  .view { display: none; } .view.active { display: block; }
+  footer { text-align: center; color: var(--muted); font-size: 12px; padding: 20px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>⚡ Predykcyjne wykrywanie awarii i degradacji usług</h1>
+  <div class="meta">Dane: <span id="data-source">PLACEHOLDER (Snowflake niepodłączony)</span> · Ostatnia aktualizacja: <span id="last-update">—</span></div>
+</header>
+
+<nav>
+  <button class="active" data-view="overview">Przegląd</button>
+  <button data-view="services">Usługi</button>
+  <button data-view="events">Eventy</button>
+  <button data-view="incidents">Incydenty</button>
+  <button data-view="model">Model</button>
+</nav>
+
+<main>
+
+  <!-- PRZEGLĄD -->
+  <section id="overview" class="view active">
+    <div class="grid kpis">
+      <div class="card kpi"><h2>Ryzyko awarii (30 min)</h2><div class="value warn" id="kpi-risk">--%</div><div class="sub">max z wszystkich usług</div></div>
+      <div class="card kpi"><h2>Aktywne alerty</h2><div class="value crit" id="kpi-alerts">--</div><div class="sub">prognozy powyżej progu</div></div>
+      <div class="card kpi"><h2>Średni MTTD</h2><div class="value" id="kpi-mttd">-- min</div><div class="sub">przed vs po wdrożeniu modelu</div></div>
+      <div class="card kpi"><h2>Nadchodzący event</h2><div class="value" id="kpi-event">--</div><div class="sub">czas do startu</div></div>
+    </div>
+
+    <div class="grid cols-2">
+      <div class="card">
+        <h2>Prognoza ryzyka w czasie</h2>
+        <div class="placeholder tall" id="chart-risk-timeline">
+          📈 Wykres liniowy: ryzyko awarii vs czas (+ markery eventów i incydentów)
+          <code>TODO: Plotly / Chart.js → GET /api/risk?service=...&amp;from=...&amp;to=...</code>
+        </div>
+      </div>
+      <div class="card">
+        <h2>Ryzyko per usługa</h2>
+        <div class="placeholder tall" id="chart-service-heatmap">
+          🟥🟨🟩 Heatmapa / ranking usług
+          <code>TODO: GET /api/risk/services</code>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid cols-3">
+      <div class="card"><h2>Latency p95</h2><div class="placeholder" id="chart-latency">📉 Wykres metryki<code>TODO: GET /api/metrics/latency</code></div></div>
+      <div class="card"><h2>Error rate</h2><div class="placeholder" id="chart-errors">📉 Wykres metryki<code>TODO: GET /api/metrics/errors</code></div></div>
+      <div class="card"><h2>Ruch / liczba widzów</h2><div class="placeholder" id="chart-traffic">📉 Wykres metryki<code>TODO: GET /api/metrics/traffic</code></div></div>
+    </div>
+  </section>
+
+  <!-- USŁUGI -->
+  <section id="services" class="view">
+    <div class="card">
+      <h2>Stan usług</h2>
+      <table>
+        <thead><tr><th>Usługa</th><th>Ryzyko (30 min)</th><th>Status</th><th>Główny czynnik</th></tr></thead>
+        <tbody id="services-table"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- EVENTY -->
+  <section id="events" class="view">
+    <div class="grid cols-2">
+      <div class="card"><h2>Kalendarz eventów</h2>
+        <div class="placeholder tall" id="app-events-calendar">🗓️ Kalendarz / timeline eventów<code>TODO: tabela EVENTS ze Snowflake</code></div>
+      </div>
+      <div class="card"><h2>Wpływ eventów na ruch</h2>
+        <div class="placeholder tall" id="chart-event-impact">📊 Ruch w trakcie eventów vs baseline<code>TODO</code></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INCYDENTY -->
+  <section id="incidents" class="view">
+    <div class="card" style="margin-bottom:16px">
+      <h2>Historia incydentów</h2>
+      <table>
+        <thead><tr><th>ID</th><th>Usługa</th><th>Start</th><th>Wykrycie</th><th>Severity</th><th>Wykryłby model?</th></tr></thead>
+        <tbody id="incidents-table"></tbody>
+      </table>
+    </div>
+    <div class="card"><h2>Odtworzenie incydentu (replay)</h2>
+      <div class="placeholder tall" id="app-replay">▶️ Odtwarzacz historycznego incydentu: moment alarmu modelu vs zgłoszenia użytkowników<code>TODO: aplikacja webowa / iframe</code></div>
+    </div>
+  </section>
+
+  <!-- MODEL -->
+  <section id="model" class="view">
+    <div class="grid cols-3">
+      <div class="card"><h2>Precision / Recall</h2><div class="placeholder" id="chart-pr">📈 Krzywa PR<code>TODO</code></div></div>
+      <div class="card"><h2>Ważność cech</h2><div class="placeholder" id="chart-features">📊 Feature importance (SHAP)<code>TODO</code></div></div>
+      <div class="card"><h2>Lead time alarmów</h2><div class="placeholder" id="chart-leadtime">📊 Histogram: ile minut przed incydentem<code>TODO</code></div></div>
+    </div>
+    <div class="card"><h2>Miejsce na dowolną aplikację webową</h2>
+      <div class="placeholder tall" id="app-embed">🧩 Wstaw tutaj iframe (Streamlit / Grafana / Power BI)<code>&lt;iframe src="URL" width="100%" height="100%"&gt;&lt;/iframe&gt;</code></div>
+    </div>
+  </section>
+
+</main>
+
+<footer>Created using Anthropic Claude – wersja robocza, do weryfikacji przez człowieka przed użyciem poza środowiskiem wewnętrznym.</footer>
+
+<script>
+  // ===== Konfiguracja – po podłączeniu backendu zmień na false i ustaw API_BASE =====
+  const USE_MOCK = true;
+  const API_BASE = "/api";
+
+  // Przełączanie zakładek
+  document.querySelectorAll("nav button").forEach(btn => btn.addEventListener("click", () => {
+    document.querySelectorAll("nav button, .view").forEach(el => el.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById(btn.dataset.view).classList.add("active");
+  }));
+
+  // Dane przykładowe (do czasu gotowego modelu i bazy)
+  const mock = {
+    kpis: { risk: 72, alerts: 3, mttd: 4, eventIn: "02:15 h" },
+    services: [
+      { name: "Streaming / CDN", risk: 72, factor: "Rosnący ruch przed eventem" },
+      { name: "Autoryzacja (login)", risk: 48, factor: "Wzrost latency p95" },
+      { name: "Koszyk / płatności", risk: 15, factor: "—" },
+      { name: "Wyszukiwarka", risk: 9, factor: "—" }
+    ],
+    incidents: [
+      { id: "INC-1001", service: "Streaming / CDN", start: "2026-10-04 20:41", detected: "2026-10-04 21:05", sev: "P1", model: "tak (+24 min)" },
+      { id: "INC-1002", service: "Autoryzacja", start: "2026-10-11 18:10", detected: "2026-10-11 18:22", sev: "P2", model: "tak (+12 min)" },
+      { id: "INC-1003", service: "Wyszukiwarka", start: "2026-10-19 09:02", detected: "2026-10-19 09:30", sev: "P3", model: "nie" }
+    ]
+  };
+
+  const level = r => r >= 60 ? "crit" : r >= 30 ? "warn" : "ok";
+  const label = { crit: "Wysokie", warn: "Podwyższone", ok: "OK" };
+
+  async function load() {
+    const data = USE_MOCK ? mock : await (await fetch(API_BASE + "/dashboard")).json();
+    document.getElementById("kpi-risk").textContent = data.kpis.risk + "%";
+    document.getElementById("kpi-alerts").textContent = data.kpis.alerts;
+    document.getElementById("kpi-mttd").textContent = data.kpis.mttd + " min";
+    document.getElementById("kpi-event").textContent = data.kpis.eventIn;
+    document.getElementById("last-update").textContent = new Date().toLocaleString("pl-PL");
+    if (!USE_MOCK) document.getElementById("data-source").textContent = "Snowflake";
+
+    document.getElementById("services-table").innerHTML = data.services.map(s => {
+      const l = level(s.risk);
+      return `<tr><td>${s.name}</td><td class="${l}">${s.risk}%</td><td><span class="badge ${l}">${label[l]}</span></td><td>${s.factor}</td></tr>`;
+    }).join("");
+
+    document.getElementById("incidents-table").innerHTML = data.incidents.map(i =>
+      `<tr><td>${i.id}</td><td>${i.service}</td><td>${i.start}</td><td>${i.detected}</td><td>${i.sev}</td><td>${i.model}</td></tr>`
+    ).join("");
+  }
+  load();
+
+  // Miejsce na wstawianie wykresów, np.:
+  // Plotly.newPlot("chart-risk-timeline", [...], {...});
+</script>
+</body>
+</html>
