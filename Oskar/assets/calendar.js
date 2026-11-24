@@ -66,7 +66,10 @@
     const evs = new Map();
     CALENDAR_EVENTS.forEach(e => evs.set(e.date, [...(evs.get(e.date) || []), e]));
 
-    let html = `<div class="cal-legend"><span><i class="lg hol"></i>Dzień wolny (święto)</span><span><i class="lg obs"></i>Obchody</span><span><i class="lg wk"></i>Weekend</span><span><i class="lg ev"></i>Event</span><span><i class="lg td"></i>Dziś</span></div><div class="cal-months">`;
+    const nrm = s => String(s).toLowerCase().replace(/ł/g, "l").normalize("NFD").replace(/[̀-ͯ]/g, "");   // szukanie bez polskich znaków
+    const attr = s => nrm(s).replace(/"/g, "");
+    let html = `<div class="cal-searchbar"><input type="search" id="cal-search" class="cal-search" placeholder="Szukaj eventu lub święta (nazwa albo data, np. 24.12)…" autocomplete="off"><span class="muted small" id="cal-search-info"></span></div>
+      <div class="cal-legend"><span><i class="lg hol"></i>Dzień wolny (święto)</span><span><i class="lg obs"></i>Obchody</span><span><i class="lg wk"></i>Weekend</span><span><i class="lg ev"></i>Event</span><span><i class="lg td"></i>Dziś</span></div><div class="cal-months">`;
 
     for (let mi = 0; mi < monthsCount; mi++) {
       const ms = new Date(first.getFullYear(), first.getMonth() + mi, 1);
@@ -79,7 +82,8 @@
         const h = hol.get(k), ev = evs.get(k) || [];
         const cls = ["cal-day", h && h.off ? "hol" : h ? "obs" : "", wd >= 5 ? "wk" : "", ev.length ? "ev" : "", k === todayKey ? "td" : ""].join(" ");
         const tip = [h && `${h.name}${h.off ? " – dzień wolny, spodziewany podwyższony ruch" : ""}`, ...ev.map(e => `${e.name}: ${e.note}`)].filter(Boolean).join("\n");
-        html += `<div class="${cls}" title="${tip.replace(/"/g, "&quot;")}"><span class="n">${d}</span>` +
+        const text = (h || ev.length) ? attr(`${h ? h.name : ""} ${ev.map(e => e.name).join(" ")} ${k} ${pad(d)}.${pad(ms.getMonth() + 1)}`) : "";
+        html += `<div class="${cls}" data-date="${k}" data-text="${text}" title="${tip.replace(/"/g, "&quot;")}"><span class="n">${d}</span>` +
           (h ? `<span class="lbl">${h.short}</span>` : "") + ev.map(e => `<span class="lbl evl">${e.name.replace(/ \(przykład\)/, "")}</span>`).join("") + "</div>";
       }
       html += "</div></div>";
@@ -94,10 +98,23 @@
     html += `<table class="cal-list"><thead><tr><th>Data</th><th>Dzień</th><th>Nazwa</th><th>Rodzaj</th><th>Prognoza ruchu</th></tr></thead><tbody>` +
       items.map(i => {
         const dt = new Date(i.k + "T00:00:00");
-        return `<tr><td>${i.k}</td><td>${DOW[(dt.getDay() + 6) % 7]}</td><td>${i.name}</td><td>${i.kind}</td><td>${i.busy ? (i.note || "Podwyższony ruch (dzień wolny)") : "Normalny"}</td></tr>`;
+        return `<tr data-text="${attr(`${i.name} ${i.kind} ${i.k} ${i.k.slice(8)}.${i.k.slice(5, 7)} ${i.note || ""}`)}"><td>${i.k}</td><td>${DOW[(dt.getDay() + 6) % 7]}</td><td>${i.name}</td><td>${i.kind}</td><td>${i.busy ? (i.note || "Podwyższony ruch (dzień wolny)") : "Normalny"}</td></tr>`;
       }).join("") + "</tbody></table>";
 
     root.innerHTML = html;
+
+    // Szukanie: filtruje listę pod kalendarzem, pasujące dni dostają ramkę, pozostałe są przygaszone
+    const inp = root.querySelector("#cal-search"), info = root.querySelector("#cal-search-info");
+    inp.addEventListener("input", () => {
+      const q = nrm(inp.value.trim());
+      let n = 0;
+      root.querySelectorAll(".cal-list tbody tr").forEach(tr => { const hit = !q || tr.dataset.text.includes(q); tr.hidden = !hit; if (q && hit) n++; });
+      root.querySelectorAll(".cal-day").forEach(c => {
+        const hit = !!q && !!c.dataset.text && c.dataset.text.includes(q);
+        c.classList.toggle("match", hit); c.classList.toggle("dim", !!q && !hit);
+      });
+      info.textContent = q ? (n ? `Znaleziono: ${n}` : "Brak wyników") : "";
+    });
   }
 
   render("calendar", 3);

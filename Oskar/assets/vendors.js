@@ -85,6 +85,7 @@
   }
 
   function renderDd() {
+    const restoreFocus = captureSearchFocus();   // lista odświeża się co 3 s – kursor w polu szukania zostaje
     $("dd-updated").textContent = "· aktualizacja " + new Date(updated).toLocaleTimeString("pl-PL");
     $("dd-list").innerHTML = [...SERVICES].sort((a, b) => a.name.localeCompare(b.name, "pl")).map(d => {
       const s = state[d.id], l = lvl(s.v, d.base), open = ddOpen.has(d.id);
@@ -95,6 +96,7 @@
         <span class="chev" aria-hidden="true">${open ? "▴" : "▾"}</span>
         ${open ? `<div class="detail">${historyHtml(d)}</div>` : ""}</li>`;
     }).join("");
+    restoreFocus();
   }
 
   // Cały wiersz jest klikalny (poza rozwiniętym panelem); wszystko startuje zwinięte
@@ -105,6 +107,10 @@
     if (e.target.closest(".detail")) return;
     const li = e.target.closest("li.item");
     if (li) toggleDd(li);
+  });
+  $("dd-list").addEventListener("input", e => {   // „Szukaj w historii"
+    const s = e.target.closest("[data-hsearch]");
+    if (s) { histQuery[s.dataset.hsearch] = s.value; renderDd(); }
   });
   $("dd-list").addEventListener("keydown", e => {
     if ((e.key === "Enter" || e.key === " ") && e.target.matches("li.item")) { e.preventDefault(); toggleDd(e.target); }

@@ -567,3 +567,31 @@ h1.page-title { font-size: 24px; font-weight: 700; border-bottom: 1px solid var(
 .more-btn:hover { background: var(--accent); color: var(--on-accent); }
 /* W panelach problemów i na osi czasu status pokazują odznaka, kropka i ramka – tekst zostaje w kolorze podstawowym */
 .prob.ok, .prob.warn, .prob.crit, .tl-item.ok, .tl-item.warn, .tl-item.crit, .tl-item.unk { color: var(--text); }
+
+/* ===== Tryb ciemny – stonowany: ciemniejsze tło, ciemne karty z jasnym tekstem, spokojniejszy pasek działów ===== */
+html[data-theme="dark"],
+html[data-theme="dark"] :is(.card, .dropdown, .toast, .verdict, .verdict-line, .dd-banner, .search, .dd-head select) {
+  --text: #e6eefb; --muted: #9fb4d1; --accent: #56b9f2; --ok: #3bd39b; --warn: #f0b445; --crit: #f47070;
+  --border: rgba(125, 170, 225, .2); --panel: #0d1b33; --panel-solid: #0d1b33; --panel2: #0a1528;
+  --hover: rgba(86, 185, 242, .12); --track: rgba(255, 255, 255, .12); --field-border: rgba(160, 195, 235, .4);
+  --wk: rgba(255, 255, 255, .05); --cal: #0a1528; --dash: rgba(140, 180, 230, .35);
+}
+html[data-theme="dark"] {
+  --bg: #030b18; --bg-grad: linear-gradient(160deg, #020812 0%, #04142c 55%, #072650 100%);
+  --header-bg: rgba(2, 9, 20, .88); --on-accent: #03182f; --shadow: 0 6px 22px rgba(0, 0, 0, .45); --ev-l: 62%;
+}
+html[data-theme="light"] { --ev-l: 40%; }
+html[data-theme="dark"] :is(.card, .dropdown, .toast, .verdict, .verdict-line, .search, .dd-head select) { background: var(--panel); color: var(--text); }
+html[data-theme="dark"] .search { background: var(--panel2); }
+html[data-theme="dark"] .dd-banner { background: color-mix(in srgb, var(--warn) 12%, var(--panel)); color: var(--text); }
+html[data-theme="dark"] .navbar { background: linear-gradient(90deg, #06224f, #0a4488); box-shadow: 0 2px 8px rgba(0, 0, 0, .5); }
+html[data-theme="dark"] .card { backdrop-filter: none; }
+
+/* Szukanie w kalendarzu i w historii incydentów */
+.cal-searchbar { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.cal-search, .hist-search { background: var(--panel2); color: var(--text); border: 1px solid var(--field-border); border-radius: 6px; padding: 7px 12px; font: inherit; font-size: 14px; }
+.cal-search { width: min(460px, 100%); }
+.hist-search { width: min(420px, 100%); margin: 2px 0 10px; font-size: 13px; }
+.cal-search:focus, .hist-search:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+.cal-day.match { outline: 3px solid var(--accent); outline-offset: -1px; }
+.cal-day.dim { opacity: .3; }

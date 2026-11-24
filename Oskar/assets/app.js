@@ -234,10 +234,17 @@ const link = href => ROOT + href;
 function buildIndex() {
   const d = appData, idx = [];
   NAV.forEach(([id, name, href]) => idx.push({ type: "Strona", title: name, sub: "", href: link(href), key: name }));
-  (d.services || []).forEach(s => idx.push({ type: "Usługa", title: s.name, sub: `ryzyko ${s.risk}% · ${s.factor}`, href: link("pages/services.html"), key: `${s.name} ${s.factor}` }));
+  (d.services || []).forEach(s => idx.push({ type: "Usługa", title: s.name, sub: `ryzyko ${s.risk}% · ${s.factor}`, href: link("pages/services.html"), key: `${s.name} ${s.factor}`, focus: `[data-service="${s.name}"]` }));
   (d.incidents || []).forEach(i => idx.push({ type: "Incydent", title: `${i.id} – ${i.service}`, sub: `${i.start} · ${i.sev}`, href: link("pages/incidents.html"), key: `${i.id} ${i.service} ${i.sev}` }));
-  (d.vendors || []).forEach(v => idx.push({ type: "Vendor", title: v.name, sub: `${v.component} · ${v.status}`, href: link("pages/vendors.html"), key: `${v.name} ${v.component}` }));
-  (d.channels || []).forEach(c => idx.push({ type: "Kanał", title: c.name, sub: `${fmt(c.viewers)} widzów · CDN ${c.cdnLoad}%`, href: link("index.html"), key: c.name, icon: channelIcon(c.name, 24) }));
+  (d.vendors || []).forEach(v => idx.push({ type: "Vendor", title: v.name, sub: `${v.component} · ${STATUS_LABEL[v.status] || v.status}`, href: link("pages/vendors.html"), key: `${v.name} ${v.component}`, focus: `[data-vendor="${v.name}"]` }));
+  (d.channels || []).forEach(c => idx.push({ type: "Kanał", title: c.name, sub: `${fmt(c.viewers)} widzów · CDN ${c.cdnLoad}%`, href: link("index.html"), key: c.name, icon: channelIcon(c.name, 24), focus: `[data-ch="${c.name}"]` }));
+  // Kalendarz: święta i eventy z miesięcy widocznych na stronie Eventy – wynik prowadzi do dnia w kalendarzu
+  if (window.getCalendarItems) window.getCalendarItems(3).forEach(e => idx.push({
+    type: e.kind === "Event" ? "Event" : "Święto", title: e.name, sub: `${e.date} · ${e.kind}${e.note ? " · " + e.note : ""}`,
+    href: link("pages/events.html"), key: `${e.name} ${e.date} ${e.date.slice(8)}.${e.date.slice(5, 7)} ${e.kind}`, focus: `[data-date="${e.date}"]` }));
+  // Historia incydentów vendorów – tylko już wczytana (po rozwinięciu dostawcy na stronie Vendorzy)
+  (d.vendors || []).forEach(v => ((v.history && v.history.incidents) || []).forEach(i => idx.push({
+    type: "Historia", title: i.name, sub: `${v.name} · ${fmtDate(i.created)}`, href: link("pages/vendors.html"), key: `${i.name} ${v.name} ${i.desc || ""}`, focus: `[data-vendor="${v.name}"]` })));
   return idx;
 }
 
@@ -247,14 +254,14 @@ function runSearch() {
   if (!q) { sBox.hidden = true; return; }
   const res = buildIndex().filter(e => norm(e.title + " " + e.key + " " + e.type).includes(q)).slice(0, 8);
   sBox.innerHTML = res.length
-    ? res.map(e => `<a class="dd-item" href="${e.href}"><span class="tag">${e.type}</span>${e.icon || ""}<span><b>${e.title}</b>${e.sub ? `<br><small>${e.sub}</small>` : ""}</span></a>`).join("")
-    : `<div class="dd-empty">Brak wyników dla „${sInput.value}"</div>`;
+    ? res.map(e => `<a class="dd-item" href="${e.href}" data-focus="${esc(e.focus || "")}"><span class="tag">${e.type}</span>${e.icon || ""}<span><b>${esc(e.title)}</b>${e.sub ? `<br><small>${esc(e.sub)}</small>` : ""}</span></a>`).join("")
+    : `<div class="dd-empty">Brak wyników dla „${esc(sInput.value)}"</div>`;
   sBox.hidden = false;
 }
 sInput.addEventListener("input", runSearch);
 sInput.addEventListener("focus", runSearch);
 sInput.addEventListener("keydown", e => {
-  if (e.key === "Enter") { const a = sBox.querySelector("a"); if (a) location.href = a.href; }
+  if (e.key === "Enter") { const a = sBox.querySelector("a"); if (a) a.click(); }
   if (e.key === "Escape") { sBox.hidden = true; sInput.blur(); }
 });
 document.addEventListener("keydown", e => {
@@ -310,7 +317,14 @@ $("bell").addEventListener("click", e => { e.stopPropagation(); $("notif-panel")
 $("notif-readall").addEventListener("click", () => { setRead(allAlerts().map(a => a.id)); renderNotifs(); });
 $("notif-perm").addEventListener("click", async () => { await Notification.requestPermission(); renderNotifs(); });
 $("notif-panel").addEventListener("click", e => e.stopPropagation());
-sBox.addEventListener("click", e => e.stopPropagation());
+sBox.addEventListener("click", e => {
+  e.stopPropagation();
+  // Wynik z celem (dzień w kalendarzu, vendor, usługa, kanał): po przejściu element jest centrowany i podświetlany
+  const a = e.target.closest("a[data-focus]");
+  if (!a || !a.dataset.focus) return;
+  if (new URL(a.href).pathname === location.pathname) { e.preventDefault(); sBox.hidden = true; focusElement(a.dataset.focus); }
+  else sessionStorage.setItem("pw_focus", a.dataset.focus);
+});
 document.addEventListener("click", e => { $("notif-panel").hidden = true; if (e.target !== sInput) sBox.hidden = true; });
 
 // Toast + powiadomienie przeglądarki dla nowego alertu
@@ -384,7 +398,19 @@ function updateNavDots() {
   set("player", p.errors > ERRORS_MAX ? "crit" : (p.bitrate < BITRATE_MIN || p.rebuf > REBUF_MAX) ? "warn" : null);
 }
 
+// Pole „Szukaj w historii" nie może tracić kursora przy przerysowaniu listy (odświeżanie co kilka sekund)
+function captureSearchFocus() {
+  const a = document.activeElement, k = a && a.dataset && a.dataset.hsearch;
+  if (!k) return () => {};
+  const pos = a.selectionStart;
+  return () => {
+    const el = document.querySelector(`[data-hsearch="${CSS.escape(k)}"]`);
+    if (el) { el.focus(); try { el.setSelectionRange(pos, pos); } catch (e) { /* typ pola bez zaznaczenia */ } }
+  };
+}
+
 function renderVendors() {
+  const restoreFocus = captureSearchFocus();
   const v = appData.vendors || [], dg = diagnose(appData);
   if ($("verdict-box")) $("verdict-box").innerHTML =
     `<div class="verdict ${dg.level}"><div class="verdict-title">${dg.title}</div><div>${dg.text}</div></div>`;
@@ -409,6 +435,7 @@ function renderVendors() {
     const s = ourSignals(appData);
     $("vendor-our-signals").innerHTML = s.length ? s.map(t => `<li class="warn">${t}</li>`).join("") : `<li class="ok">Nasze metryki w normie</li>`;
   }
+  restoreFocus();
 }
 
 // ===== Kliknięcie w powiadomienie: przejście na stronę, wycentrowanie i podświetlenie elementu =====
@@ -427,7 +454,7 @@ function alertTarget(a) {
 function focusElement(selector, tries = 30) {
   const el = document.querySelector(selector);
   if (!el) { if (tries > 0) setTimeout(() => focusElement(selector, tries - 1), 100); return; }   // dane mogą dojść asynchronicznie
-  const box = el.closest("li.item, .card, .ch, tr") || el;
+  const box = el.closest(".cal-day, li.item, .card, .ch, tr") || el;
   box.scrollIntoView({ block: "center", inline: "center", behavior: "smooth" });
   box.classList.remove("pw-highlight"); void box.offsetWidth;   // restart animacji
   box.classList.add("pw-highlight");                            // 3 mignięcia × 0,5 s = 1,5 s
@@ -472,7 +499,7 @@ function setKpi(id, color, icon, text) {
 
 function eventColor(msLeft) {
   const t = Math.min(1, Math.max(0, msLeft / EVENT_HORIZON_MS));   // 1 = daleko, 0 = start
-  return `hsl(${Math.round(t * 205)} 85% 40%)`;                    // 205° niebieski → 0° czerwony
+  return `hsl(${Math.round(t * 205)} 85% var(--ev-l, 45%))`;                    // 205° niebieski → 0° czerwony
 }
 
 function renderKpis(k) {
@@ -539,10 +566,14 @@ function timelineHtml(incidents, shown) {
 }
 
 // Sekcja historii z przyciskiem „Pokaż starsze" i linkiem do pełnej historii u źródła
+const histQuery = {};     // klucz (vendor / serwis) → tekst wpisany w „Szukaj w historii"
 function historySectionHtml(key, incidents, fullUrl, fullLabel) {
-  const total = incidents.length, shown = Math.min(histShown[key] || HIST_STEP, total), rest = total - shown;
-  return `<h4>Historia incydentów <span class="tl-count">${shown} z ${total}</span></h4>
-    ${total ? `<div class="timeline">${timelineHtml(incidents, shown)}</div>` : `<div class="muted small">Brak zdarzeń w historii.</div>`}
+  const q = norm((histQuery[key] || "").trim());
+  const list = q ? incidents.filter(i => norm(`${i.name} ${i.desc || ""} ${fmtDate(i.created)}`).includes(q)) : incidents;
+  const total = list.length, shown = Math.min(histShown[key] || HIST_STEP, total), rest = total - shown;
+  return `<h4>Historia incydentów <span class="tl-count">${q ? `${total} z ${incidents.length} pasuje` : `${shown} z ${total}`}</span></h4>
+    ${incidents.length ? `<input type="search" class="hist-search" data-hsearch="${esc(key)}" value="${esc(histQuery[key] || "")}" placeholder="Szukaj w historii (nazwa, opis, data)…" autocomplete="off">` : ""}
+    ${total ? `<div class="timeline">${timelineHtml(list, shown)}</div>` : `<div class="muted small">${q ? "Brak zdarzeń pasujących do zapytania." : "Brak zdarzeń w historii."}</div>`}
     <div class="hist-actions">${rest > 0 ? `<button class="more-btn" data-more="${esc(key)}">Pokaż starsze (+${Math.min(HIST_STEP, rest)})</button>` : ""}
       ${fullUrl ? `<a class="link-small" href="${esc(fullUrl)}" target="_blank" rel="noopener">${fullLabel} ↗</a>` : ""}</div>`;
 }
@@ -568,7 +599,7 @@ async function statuspageHistory(src) {
     historyUrl: src.base + "/history",
     components: (sum.components || []).filter(c => !c.group).map(c => ({ name: c.name, status: c.status })),
     incidents: (inc.incidents || []).slice(0, 50).map(i => ({ name: i.name, impact: i.impact, status: i.status, created: i.created_at, resolved: i.resolved_at,
-      desc: ((i.incident_updates || [])[0] || {}).body }))
+      desc: stripHtml(((i.incident_updates || [])[0] || {}).body) }))
   };
 }
 
@@ -624,6 +655,10 @@ if (vendorsGridEl) {
     if (e.target.closest("a") || e.target.closest(".detail")) return;
     const li = e.target.closest(".vrow");
     if (li) toggleVendor(li);
+  });
+  vendorsGridEl.addEventListener("input", e => {   // „Szukaj w historii"
+    const s = e.target.closest("[data-hsearch]");
+    if (s) { histQuery[s.dataset.hsearch] = s.value; renderVendors(); }
   });
   vendorsGridEl.addEventListener("keydown", e => {
     if (e.key !== "Enter" && e.key !== " ") return;
@@ -712,7 +747,7 @@ async function liveStatuspage(src) {
   const outages = status === "ok" ? [] : incs.map(i => ({
     service: i.components && i.components.length ? i.components.slice(0, 3).map(c => c.name).join(", ") + (i.components.length > 3 ? ` +${i.components.length - 3}` : "") : i.name,
     title: i.name, status: i.impact === "minor" ? "degraded" : "down", since: i.created_at,
-    description: (i.incident_updates || []).map(u => `[${fmtDate(u.created_at)}] ${INC_STATUS[u.status] || u.status}: ${u.body}`).join("\n\n") || i.name,
+    description: (i.incident_updates || []).map(u => `[${fmtDate(u.created_at)}] ${INC_STATUS[u.status] || u.status}: ${stripHtml(u.body)}`).join("\n\n") || i.name,
     url: i.shortlink || src.base
   }));
   return { status, note, sinceMin, outages };
