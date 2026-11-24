@@ -3,25 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>pulsewatch – Przegląd</title>
+<title>Radar Awarii – Przegląd</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link rel="stylesheet" href="assets/style.css">
+<script>document.documentElement.dataset.theme = localStorage.getItem("pw_theme") || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");</script>
 </head>
 <body data-page="overview" data-root="">
 <div id="site-header"></div>
 
 <main>
-  <div id="verdict-line"></div>
-  <!-- Kompaktowe KPI -->
-  <div class="grid kpis compact">
-    <div class="card kpi"><h2>Ryzyko awarii (30 min)</h2><div class="value warn" id="kpi-risk">--%</div><div class="sub">max z wszystkich usług</div></div>
-    <div class="card kpi"><h2>Aktywne alerty</h2><div class="value crit" id="kpi-alerts">--</div><div class="sub">prognozy powyżej progu</div></div>
-    <div class="card kpi"><h2>Średni MTTD</h2><div class="value" id="kpi-mttd">-- min</div><div class="sub">przed vs po wdrożeniu modelu</div></div>
-    <div class="card kpi"><h2>Nadchodzący event</h2><div class="value" id="kpi-event">--</div><div class="sub">czas do startu</div></div>
+  <!-- Najważniejsze na górze: co jest zepsute lub wymaga sprawdzenia -->
+  <div class="card attention" id="attention-card">
+    <h2>Wymaga uwagi <span id="attention-summary"></span></h2>
+    <ul class="att-list" id="attention-list"></ul>
   </div>
 
-  <!-- Top 5 kanałów live -->
-  <div class="card" style="margin-bottom:16px">
-    <h2>Top 5 kanałów live wg ruchu <span class="hint">ostatnie 3 h, kropka = szczyt oglądalności; kandydaci do wpływu na stabilność serwerów</span></h2>
+  <div class="grid kpis compact">
+    <div class="card kpi" id="kpi-card-risk"><h2>Ryzyko awarii (30 min) <span class="kpi-status"></span></h2><div class="value" id="kpi-risk">--%</div><div class="sub">max z wszystkich usług</div></div>
+    <div class="card kpi" id="kpi-card-alerts"><h2>Aktywne alerty <span class="kpi-status"></span></h2><div class="value" id="kpi-alerts">--</div><div class="sub">prognozy powyżej progu</div></div>
+    <div class="card kpi" id="kpi-card-mttd"><h2>Średni MTTD <span class="kpi-status"></span></h2><div class="value" id="kpi-mttd">-- min</div><div class="sub">przed vs po wdrożeniu modelu</div></div>
+    <div class="card kpi" id="kpi-card-event"><h2>Nadchodzący event <span class="kpi-status"></span></h2><div class="value" id="kpi-event">--</div><div class="sub" id="kpi-event-sub">czas do startu</div><div class="kpi-bar"><i id="kpi-event-bar"></i></div></div>
+  </div>
+
+  <div class="card" style="margin-bottom:18px">
+    <h2>Top 5 kanałów na żywo <span class="hint">ostatnie 3 h, kropka = szczyt oglądalności</span></h2>
     <div class="channels" id="top-channels"></div>
   </div>
 
@@ -50,6 +55,7 @@
 </main>
 
 <div id="site-footer"></div>
+<script src="assets/channels.js"></script>
 <script src="assets/app.js"></script>
 </body>
 </html>

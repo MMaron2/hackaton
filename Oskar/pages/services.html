@@ -3,8 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>pulsewatch – Usługi</title>
+<title>Radar Awarii – Usługi</title>
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 <link rel="stylesheet" href="../assets/style.css">
+<script>document.documentElement.dataset.theme = localStorage.getItem("pw_theme") || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");</script>
 </head>
 <body data-page="services" data-root="../">
 <div id="site-header"></div>
@@ -29,6 +31,7 @@
 </main>
 
 <div id="site-footer"></div>
+<script src="../assets/channels.js"></script>
 <script src="../assets/app.js"></script>
 </body>
 </html>

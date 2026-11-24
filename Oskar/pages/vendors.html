@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Radar Awarii – Vendorzy</title>
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script>document.documentElement.dataset.theme = localStorage.getItem("pw_theme") || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");</script>
+</head>
+<body data-page="vendors" data-root="../">
+<div id="site-header"></div>
+
+<main>
+  <h1 class="page-title">Vendorzy</h1>
+
+
+  <div class="tabs" role="tablist">
+    <button class="tab active" role="tab" data-tab="status">Status serwisów</button>
+    <button class="tab" role="tab" data-tab="dd">Downdetector <span class="live-dot">LIVE</span></button>
+  </div>
+
+  <!-- Zakładka 1: dostawcy z aktywnymi problemami (jedna lista, sortowana wg aktywności) -->
+  <section id="tab-status">
+    <div class="card">
+      <h2>Dostawcy <span class="muted small" id="vendors-summary"></span></h2>
+      <div id="vendors-grid"></div>
+      <div class="muted small" style="margin-top:8px">Lista sortowana alfabetycznie. Rozwiń dostawcę, aby zobaczyć aktywne problemy z opisem od vendora oraz historię.</div>
+    </div>
+  </section>
+
+  <!-- Zakładka 2: Downdetector (lista z historią statusów) -->
+  <section id="tab-dd" hidden>
+    <div class="dd-banner">Dane symulowane – Downdetector nie ma publicznego API. Podłącz własne źródło przez <code>DD_API</code> w <code>assets/vendors.js</code>.</div>
+    <div class="card">
+      <h2>Zgłoszenia użytkowników <span class="live-dot">LIVE</span> <span class="muted small" id="dd-updated"></span></h2>
+      <ul class="vlist" id="dd-list"></ul>
+      <a class="link-small" href="https://downdetector.pl/" target="_blank" rel="noopener" style="display:inline-block;margin-top:10px">Otwórz Downdetector ↗</a>
+    </div>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+<script src="../assets/channels.js"></script>
+<script src="../assets/app.js"></script>
+<script src="../assets/vendors.js"></script>
+</body>
+</html>
