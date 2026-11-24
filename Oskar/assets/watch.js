@@ -104,8 +104,8 @@
     const add = e.target.closest("[data-add]");
     if (add) {
       const k = add.dataset.add, p = root.querySelector(`[data-picker="${k}"]`);
-      p.hidden = !p.hidden;
-      if (!p.hidden) { renderPicker(k); p.querySelector("input").focus(); }
+      if (p.hidden) { p.hidden = false; renderPicker(k); animateResize(p, 0); p.querySelector("input").focus(); }   // płynne rozwinięcie listy „Dodaj"
+      else animateClose(p, () => { p.hidden = true; });
       return;
     }
     if (e.target.closest("[data-pick]") || e.target.closest("[data-search]") || e.target.closest(".picker")) return;
@@ -118,8 +118,7 @@
       return;
     }
     if (e.target.closest("a") || e.target.closest(".detail") || k !== "vendors") return;
-    expanded.has(id) ? expanded.delete(id) : expanded.add(id);
-    renderLists();
+    toggleRow(root, li, () => expanded.has(id), on => on ? expanded.add(id) : expanded.delete(id), renderLists);   // płynne rozwijanie / zwijanie
   });
 
   root.addEventListener("change", e => {

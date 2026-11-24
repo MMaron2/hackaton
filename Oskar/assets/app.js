@@ -7,6 +7,7 @@ const ROOT = document.body.dataset.root || "";   // "" dla index.html, "../" dla
 const PAGE = document.body.dataset.page;
 const NAV = [
   ["overview",  "Przegląd",  "index.html"],
+  ["alerts",    "Alerty",    "pages/alerts.html"],
   ["player",    "Player",    "pages/player.html"],
   ["services",  "Usługi",    "pages/services.html"],
   ["vendors",   "Vendorzy",  "pages/vendors.html"],
@@ -40,6 +41,34 @@ const ICON_PATHS = {
 };
 const icon = name => `<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON_PATHS[name] || ""}</svg>`;
 document.querySelectorAll("i[data-ic]").forEach(el => { el.innerHTML = icon(el.dataset.ic); });
+
+// Płynne przejścia między stronami: treść znika przed wyjściem i wjeżdża po wejściu (style: body.page-leaving, @keyframes page-in).
+// Dotyczy linków w menu, logo, stopce, wyników wyszukiwania i przejść z powiadomień (openAlert).
+const LEAVE_MS = 170;
+function navigateTo(url) {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) { location.href = url; return; }
+  document.body.classList.add("page-leaving");
+  setTimeout(() => { location.href = url; }, LEAVE_MS);
+}
+document.addEventListener("click", e => {
+  if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  const a = e.target.closest("a[href]");
+  if (!a || a.target === "_blank" || a.hasAttribute("download") || a.getAttribute("href").startsWith("#")) return;
+  const url = new URL(a.href, location.href);
+  if (url.origin !== location.origin) return;   // tylko strony tego serwisu
+  e.preventDefault(); navigateTo(url.href);
+});
+window.addEventListener("pageshow", () => document.body.classList.remove("page-leaving"));   // powrót przyciskiem „Wstecz"
+// Klikalne kafelki (KPI na Przeglądzie): data-go="strona" przenosi na podstronę,
+// data-go-focus="selektor" przewija do elementu na tej samej stronie i go podświetla
+function goTile(el) {
+  if (el.dataset.goFocus) { focusElement(el.dataset.goFocus); return; }
+  navigateTo(new URL(ROOT + el.dataset.go, location.href).href);
+}
+document.addEventListener("click", e => { const t = e.target.closest("[data-go], [data-go-focus]"); if (t) goTile(t); });
+document.addEventListener("keydown", e => {
+  if ((e.key === "Enter" || e.key === " ") && e.target.matches && e.target.matches("[data-go], [data-go-focus]")) { e.preventDefault(); goTile(e.target); }
+});
 // Nagłówek: logo + wyszukiwarka i akcje, pod spodem przyklejony pasek działów
 document.getElementById("site-header").innerHTML = `
   <header class="masthead">
@@ -323,14 +352,17 @@ function renderNotifs() {
   $("notif-perm-state").textContent = perm === "granted" ? "Przeglądarka: włączone" : perm === "denied" ? "Przeglądarka: zablokowane" : "";
   $("notif-perm").hidden = perm !== "default";
 
-  // Lista „Wymaga uwagi" na Przeglądzie: najpierw krytyczne, potem ostrzeżenia; kliknięcie prowadzi do miejsca usterki
+  // Kafelek „Aktywne alerty" (Przegląd) pokazuje tę samą liczbę co lista „Wymaga uwagi" (w danych przykładowych liczymy ją z alertów)
+  if (USE_MOCK && appData.kpis && $("kpi-alerts")) {
+    appData.kpis.alerts = list.length;
+    setText("kpi-alerts", list.length);
+    setKpi("alerts", KPI_COLOR[list.length ? "crit" : "ok"], list.length ? "crit" : "ok", list.length ? "DO REAKCJI" : "BRAK");
+  }
+  // Kropka przy „Alerty" w menu: czerwona przy alercie krytycznym, pomarańczowa przy pozostałych
+  const alertsDot = document.querySelector('nav a[data-id="alerts"] .navdot');
+  if (alertsDot) { const lv = list.some(a => a.level === "crit") ? "crit" : list.length ? "warn" : ""; alertsDot.hidden = !lv; alertsDot.className = "navdot " + lv; }
+  // Lista „Wymaga uwagi" (strona Alerty): najpierw krytyczne, potem ostrzeżenia; kliknięcie prowadzi do miejsca usterki
   if ($("attention-list")) {
-    // kafelek „Aktywne alerty" pokazuje tę samą liczbę co lista (w danych przykładowych liczymy ją z alertów)
-    if (USE_MOCK && appData.kpis) {
-      appData.kpis.alerts = list.length;
-      setText("kpi-alerts", list.length);
-      setKpi("alerts", KPI_COLOR[list.length ? "crit" : "ok"], list.length ? "crit" : "ok", list.length ? "DO REAKCJI" : "BRAK");
-    }
     const hhmm = ts => new Date(ts).toLocaleTimeString(LOCALE, { hour: "2-digit", minute: "2-digit" });
     const act = [...list].sort((a, b) => ((a.level === "crit" ? 0 : 1) - (b.level === "crit" ? 0 : 1)) || b.ts - a.ts);
     const nc = act.filter(a => a.level === "crit").length, nw = act.length - nc;
@@ -352,10 +384,13 @@ $("notif-panel").addEventListener("click", e => e.stopPropagation());
 sBox.addEventListener("click", e => {
   e.stopPropagation();
   // Wynik z celem (dzień w kalendarzu, vendor, usługa, kanał): po przejściu element jest centrowany i podświetlany
-  const a = e.target.closest("a[data-focus]");
-  if (!a || !a.dataset.focus) return;
-  if (new URL(a.href).pathname === location.pathname) { e.preventDefault(); sBox.hidden = true; focusElement(a.dataset.focus); }
-  else sessionStorage.setItem("pw_focus", a.dataset.focus);
+  const a = e.target.closest("a[href]");
+  if (!a) return;
+  e.preventDefault(); sBox.hidden = true;
+  const focus = a.dataset.focus;
+  if (focus && new URL(a.href).pathname === location.pathname) { focusElement(focus); return; }
+  if (focus) sessionStorage.setItem("pw_focus", focus);
+  navigateTo(a.href);
 });
 document.addEventListener("click", e => { $("notif-panel").hidden = true; if (e.target !== sInput) sBox.hidden = true; });
 
@@ -500,7 +535,7 @@ function openAlert(a) {
   if (!t) return;
   const url = new URL(ROOT + t.page, location.href);
   if (url.pathname === location.pathname) focusElement(t.selector);
-  else { sessionStorage.setItem("pw_focus", t.selector); location.href = url.href; }
+  else { sessionStorage.setItem("pw_focus", t.selector); navigateTo(url.href); }
 }
 
 const openAlertFromClick = e => {
@@ -680,24 +715,66 @@ async function loadVendorHistory(v) {
   }
 }
 
+// ===== Płynne rozwijanie i zwijanie list =====
+// Listy są przerysowywane w całości, więc animujemy wysokość panelu tuż po przerysowaniu (albo tuż przed zwinięciem).
+const REDUCE_MOTION = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const COLLAPSED = { height: "0px", paddingTop: "0px", paddingBottom: "0px", opacity: 0 };
+
+// płynna zmiana wysokości panelu z fromH (0 = rozwijanie od zera) do jego nowej wysokości
+function animateResize(el, fromH) {
+  if (!el || REDUCE_MOTION) return;
+  const toH = el.offsetHeight;
+  if (Math.abs(toH - fromH) < 2) return;
+  el.style.overflow = "hidden";
+  const done = () => { el.style.overflow = ""; };
+  el.animate([fromH === 0 ? COLLAPSED : { height: fromH + "px" }, { height: toH + "px" }], { duration: 280, easing: "ease" }).finished.then(done, done);
+}
+
+// płynne zwinięcie panelu; done() zmienia stan i przerysowuje listę (wywoływane też, gdy animacja zostanie przerwana)
+function animateClose(el, done) {
+  if (!el || REDUCE_MOTION) { done(); return; }
+  el.style.overflow = "hidden";
+  el.animate([{ height: el.offsetHeight + "px" }, COLLAPSED], { duration: 220, easing: "ease" }).finished.then(done, done);
+}
+
+// selektor panelu szczegółów danego wiersza listy
+const detailSel = li => li.dataset.vendor
+  ? `li[data-vendor="${CSS.escape(li.dataset.vendor)}"] > .detail`
+  : `li[data-id="${CSS.escape(li.dataset.id)}"] > .detail`;
+
+// przerysowanie z płynną zmianą wysokości panelu (zwijane sekcje, „Pokaż starsze", pole szukania, doczytana historia)
+function renderResized(root, sel, render) {
+  const el = sel ? root.querySelector(sel) : null, h = el ? el.offsetHeight : 0;
+  render();
+  if (sel) animateResize(root.querySelector(sel), h);
+}
+
+// rozwinięcie / zwinięcie wiersza; zwraca true, gdy wiersz został rozwinięty
+function toggleRow(root, li, isOpen, setOpen, render) {
+  const sel = detailSel(li);
+  if (isOpen()) { animateClose(root.querySelector(sel), () => { setOpen(false); render(); }); return false; }
+  setOpen(true); render(); animateResize(root.querySelector(sel), 0);
+  return true;
+}
+
 const vendorsGridEl = $("vendors-grid");
-// Cały wiersz dostawcy jest klikalny (poza linkiem „Status" i rozwiniętym panelem); wszystko startuje zwinięte
+// Cały wiersz dostawcy jest klikalny (poza rozwiniętym panelem); wszystko startuje zwinięte
 async function toggleVendor(li) {
   const name = li.dataset.vendor, v = (appData.vendors || []).find(x => x.name === name);
   if (!v) return;
-  if (vendorOpen.has(name)) vendorOpen.delete(name); else vendorOpen.add(name);
-  renderVendors();
-  if (vendorOpen.has(name) && !v.history) { await loadVendorHistory(v); renderVendors(); }
+  const opened = toggleRow(vendorsGridEl, li, () => vendorOpen.has(name), on => on ? vendorOpen.add(name) : vendorOpen.delete(name), renderVendors);
+  if (opened && !v.history) { await loadVendorHistory(v); renderResized(vendorsGridEl, detailSel(li), renderVendors); }   // historia doczytana – panel płynnie rośnie
 }
 if (vendorsGridEl) {
   const toggleSub = el => { const n = el.dataset.sub; compOpen.has(n) ? compOpen.delete(n) : compOpen.add(n); renderVendors(); };
+  const panelOf = t => { const li = t.closest("li.item"); return li ? detailSel(li) : null; };
   vendorsGridEl.addEventListener("click", e => {
     const sub = e.target.closest("[data-sub]");
-    if (sub) { toggleSub(sub); return; }
+    if (sub) { renderResized(vendorsGridEl, panelOf(sub), () => toggleSub(sub)); return; }
     const hs = e.target.closest("[data-hs-toggle]");   // lupka: pokaż / schowaj szukanie w historii
-    if (hs) { toggleHistSearch(hs.dataset.hsToggle, renderVendors); return; }
+    if (hs) { renderResized(vendorsGridEl, panelOf(hs), () => toggleHistSearch(hs.dataset.hsToggle, renderVendors)); return; }
     const more = e.target.closest("[data-more]");   // „Pokaż starsze" w historii incydentów
-    if (more) { histShown[more.dataset.more] = (histShown[more.dataset.more] || HIST_STEP) + HIST_STEP; renderVendors(); return; }
+    if (more) { renderResized(vendorsGridEl, panelOf(more), () => { histShown[more.dataset.more] = (histShown[more.dataset.more] || HIST_STEP) + HIST_STEP; renderVendors(); }); return; }
     if (e.target.closest("a") || e.target.closest(".detail")) return;
     const li = e.target.closest(".vrow");
     if (li) toggleVendor(li);
@@ -707,9 +784,9 @@ if (vendorsGridEl) {
     if (s) { histQuery[s.dataset.hsearch] = s.value; renderVendors(); }
   });
   vendorsGridEl.addEventListener("keydown", e => {
-    if (e.key === "Escape" && e.target.dataset && e.target.dataset.hsearch) { toggleHistSearch(e.target.dataset.hsearch, renderVendors); return; }
+    if (e.key === "Escape" && e.target.dataset && e.target.dataset.hsearch) { renderResized(vendorsGridEl, panelOf(e.target), () => toggleHistSearch(e.target.dataset.hsearch, renderVendors)); return; }
     if (e.key !== "Enter" && e.key !== " ") return;
-    if (e.target.dataset && e.target.dataset.sub) { e.preventDefault(); toggleSub(e.target); }
+    if (e.target.dataset && e.target.dataset.sub) { e.preventDefault(); renderResized(vendorsGridEl, panelOf(e.target), () => toggleSub(e.target)); }
     else if (e.target.classList.contains("vrow")) { e.preventDefault(); toggleVendor(e.target); }
   });
 }
@@ -894,4 +971,4 @@ if (USE_LIVE_VENDORS) { refreshVendors(); setInterval(refreshVendors, VENDOR_REF
 
 // Po przejściu z powiadomienia: podświetl element na nowej stronie
 const pendingFocus = sessionStorage.getItem("pw_focus");
-if (pendingFocus) { sessionStorage.removeItem("pw_focus"); focusElement(pendingFocus); }
+if (pendingFocus) { sessionStorage.removeItem("pw_focus"); setTimeout(() => focusElement(pendingFocus), 380); }   // po animacji wejścia strony

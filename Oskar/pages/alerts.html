@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>InfoHub – Alerty</title>
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<link rel="stylesheet" href="../assets/style.css">
+<script>document.documentElement.dataset.theme = localStorage.getItem("pw_theme") || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");</script>
+<script src="../assets/i18n.js"></script>
+</head>
+<body data-page="alerts" data-root="../">
+<div id="site-header"></div>
+
+<main>
+  <h1 class="page-title">Alerty</h1>
+
+  <!-- Co jest zepsute lub wymaga sprawdzenia: najpierw krytyczne; kliknięcie wiersza prowadzi do miejsca usterki -->
+  <div class="card attention" id="attention-card">
+    <h2>Wymaga uwagi <span id="attention-summary"></span></h2>
+    <ul class="att-list" id="attention-list"></ul>
+  </div>
+</main>
+
+<div id="site-footer"></div>
+<script src="../assets/calendar.js"></script>
+<script src="../assets/channels.js"></script>
+<script src="../assets/app.js"></script>
+</body>
+</html>

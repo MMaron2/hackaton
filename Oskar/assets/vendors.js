@@ -100,12 +100,14 @@
   }
 
   // Cały wiersz jest klikalny (poza rozwiniętym panelem); wszystko startuje zwinięte
-  const toggleDd = li => { ddOpen.has(li.dataset.id) ? ddOpen.delete(li.dataset.id) : ddOpen.add(li.dataset.id); renderDd(); };
+  const ddList = $("dd-list");
+  const toggleDd = li => { const id = li.dataset.id; toggleRow(ddList, li, () => ddOpen.has(id), on => on ? ddOpen.add(id) : ddOpen.delete(id), renderDd); };   // płynne rozwijanie / zwijanie
+  const panelOf = t => { const li = t.closest("li.item"); return li ? detailSel(li) : null; };
   $("dd-list").addEventListener("click", e => {
     const hs = e.target.closest("[data-hs-toggle]");   // lupka: pokaż / schowaj szukanie w historii
-    if (hs) { toggleHistSearch(hs.dataset.hsToggle, renderDd); return; }
+    if (hs) { renderResized(ddList, panelOf(hs), () => toggleHistSearch(hs.dataset.hsToggle, renderDd)); return; }
     const more = e.target.closest("[data-more]");   // „Pokaż starsze"
-    if (more) { histShown[more.dataset.more] = (histShown[more.dataset.more] || HIST_STEP) + HIST_STEP; renderDd(); return; }
+    if (more) { renderResized(ddList, panelOf(more), () => { histShown[more.dataset.more] = (histShown[more.dataset.more] || HIST_STEP) + HIST_STEP; renderDd(); }); return; }
     if (e.target.closest(".detail")) return;
     const li = e.target.closest("li.item");
     if (li) toggleDd(li);
@@ -115,7 +117,7 @@
     if (s) { histQuery[s.dataset.hsearch] = s.value; renderDd(); }
   });
   $("dd-list").addEventListener("keydown", e => {
-    if (e.key === "Escape" && e.target.dataset && e.target.dataset.hsearch) { toggleHistSearch(e.target.dataset.hsearch, renderDd); return; }
+    if (e.key === "Escape" && e.target.dataset && e.target.dataset.hsearch) { renderResized(ddList, panelOf(e.target), () => toggleHistSearch(e.target.dataset.hsearch, renderDd)); return; }
     if ((e.key === "Enter" || e.key === " ") && e.target.matches("li.item")) { e.preventDefault(); toggleDd(e.target); }
   });
 

@@ -30,7 +30,7 @@
     "Przeglądarka: zablokowane": ["Browser: blocked", "Browser: blockiert"],
     "Przełącz na tryb ciemny": ["Switch to dark mode", "Zum dunklen Modus wechseln"],
     "Przełącz na tryb jasny": ["Switch to light mode", "Zum hellen Modus wechseln"],
-    "Przegląd": ["Overview", "Übersicht"], "Usługi": ["Services", "Dienste"], "Vendorzy": ["Vendors", "Anbieter"],
+    "Przegląd": ["Overview", "Übersicht"], "Alerty": ["Alerts", "Warnungen"], "Usługi": ["Services", "Dienste"], "Vendorzy": ["Vendors", "Anbieter"],
     "Obserwowane": ["Watchlist", "Beobachtet"], "Eventy": ["Events", "Events"], "Incydenty": ["Incidents", "Vorfälle"], "Model": ["Model", "Modell"],
     "Działy": ["Sections", "Bereiche"],
     "Created using Anthropic Claude – wersja robocza, do weryfikacji przez człowieka przed użyciem poza środowiskiem wewnętrznym.": [
@@ -168,6 +168,7 @@
   // Teksty z liczbami i nazwami: wyrażenie → funkcja zwracająca tłumaczenie
   const RULES = [
     [/^InfoHub – (.+)$/, m => `InfoHub – ${sub(m[1])}`],
+    [/^Przejdź do: (.+)$/, m => L(`Go to: ${sub(m[1])}`, `Öffnen: ${sub(m[1])}`)],
     [/^(\d+) krytyczne$/, m => L(`${m[1]} critical`, `${m[1]} kritisch`)],
     [/^(\d+) do sprawdzenia$/, m => L(`${m[1]} to check`, `${m[1]} zu prüfen`)],
     [/^(.+) temu$/, m => L(`${m[1]} ago`, `vor ${m[1]}`)],

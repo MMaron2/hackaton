@@ -13,17 +13,11 @@
 <div id="site-header"></div>
 
 <main>
-  <!-- Najważniejsze na górze: co jest zepsute lub wymaga sprawdzenia -->
-  <div class="card attention" id="attention-card">
-    <h2>Wymaga uwagi <span id="attention-summary"></span></h2>
-    <ul class="att-list" id="attention-list"></ul>
-  </div>
-
   <div class="grid kpis compact">
-    <div class="card kpi" id="kpi-card-risk"><h2>Ryzyko awarii (30 min) <span class="kpi-status"></span></h2><div class="value" id="kpi-risk">--%</div><div class="sub">max z wszystkich usług</div></div>
-    <div class="card kpi" id="kpi-card-alerts"><h2>Aktywne alerty <span class="kpi-status"></span></h2><div class="value" id="kpi-alerts">--</div><div class="sub">prognozy powyżej progu</div></div>
-    <div class="card kpi" id="kpi-card-mttd"><h2>Średni MTTD <span class="kpi-status"></span></h2><div class="value" id="kpi-mttd">-- min</div><div class="sub">przed vs po wdrożeniu modelu</div></div>
-    <div class="card kpi" id="kpi-card-event"><h2>Nadchodzący event <span class="kpi-status"></span></h2><div class="value" id="kpi-event">--</div><div class="sub" id="kpi-event-sub">czas do startu</div><div class="kpi-bar"><i id="kpi-event-bar"></i></div></div>
+    <div class="card kpi" id="kpi-card-risk" data-go="pages/services.html" title="Przejdź do: Usługi" role="link" tabindex="0"><h2>Ryzyko awarii (30 min) <span class="kpi-status"></span></h2><div class="value" id="kpi-risk">--%</div><div class="sub">max z wszystkich usług</div></div>
+    <div class="card kpi" id="kpi-card-alerts" data-go="pages/alerts.html" title="Przejdź do: Alerty" role="link" tabindex="0"><h2>Aktywne alerty <span class="kpi-status"></span></h2><div class="value" id="kpi-alerts">--</div><div class="sub">prognozy powyżej progu</div></div>
+    <div class="card kpi" id="kpi-card-mttd" data-go="pages/incidents.html" title="Przejdź do: Incydenty" role="link" tabindex="0"><h2>Średni MTTD <span class="kpi-status"></span></h2><div class="value" id="kpi-mttd">-- min</div><div class="sub">przed vs po wdrożeniu modelu</div></div>
+    <div class="card kpi" id="kpi-card-event" data-go="pages/events.html" title="Przejdź do: Eventy" role="link" tabindex="0"><h2>Nadchodzący event <span class="kpi-status"></span></h2><div class="value" id="kpi-event">--</div><div class="sub" id="kpi-event-sub">czas do startu</div><div class="kpi-bar"><i id="kpi-event-bar"></i></div></div>
   </div>
 
   <div class="card" style="margin-bottom:18px">

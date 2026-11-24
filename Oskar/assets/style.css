@@ -640,3 +640,25 @@ i[data-ic] { display: inline-flex; font-style: normal; }
 .player .controls .ic { width: 16px; height: 16px; }
 .pl-icons { display: inline-flex; gap: 10px; }
 .unpin .ic { width: 14px; height: 14px; display: block; }
+
+/* Płynne przejścia między stronami */
+@view-transition { navigation: auto; }               /* gdy strona działa przez serwer: przeglądarka sama przenika stare i nowe widoki */
+#site-header { view-transition-name: site-header; }  /* nagłówek stoi w miejscu podczas przejścia */
+@keyframes page-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+main, #site-footer { animation: page-in .32s ease both; }
+body.page-leaving main, body.page-leaving #site-footer { animation: none; opacity: 0; transform: translateY(-8px); transition: opacity .17s ease, transform .17s ease; }
+@media (prefers-reduced-motion: reduce) { main, #site-footer { animation: none; } }
+
+/* Płynne otwieranie list rozwijanych w nagłówku (wyniki wyszukiwania, powiadomienia) */
+@keyframes drop-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+.dropdown:not([hidden]) { animation: drop-in .18s ease; transform-origin: top; }
+.chev { transition: color .15s ease; }
+@media (prefers-reduced-motion: reduce) { .dropdown:not([hidden]) { animation: none; } }
+
+/* Pasek „Dane symulowane" w trybie ciemnym: ciemne tło (wcześniejsza reguła dla okien tekstowych była silniejsza i zostawiała go białym) */
+html[data-theme="dark"] body .dd-banner { background: color-mix(in srgb, var(--warn) 14%, var(--panel)); color: var(--text); }
+
+/* Klikalne kafelki KPI */
+.kpi[data-go], .kpi[data-go-focus] { cursor: pointer; transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease; }
+.kpi[data-go]:hover, .kpi[data-go-focus]:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(0, 0, 0, .35); }
+.kpi[data-go]:focus-visible, .kpi[data-go-focus]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
