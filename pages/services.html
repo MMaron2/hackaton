@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>pulsewatch – Usługi</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-page="services" data-root="../">
+<div id="site-header"></div>
+
+<main>
+  <h1 class="page-title">Stan usług</h1>
+  <div class="card" style="margin-bottom:16px">
+    <h2>Ryzyko per usługa</h2>
+    <table>
+      <thead><tr><th>Usługa</th><th>Ryzyko (30 min)</th><th>Status</th><th>Główny czynnik</th></tr></thead>
+      <tbody id="services-table"></tbody>
+    </table>
+  </div>
+  <div class="grid cols-2">
+    <div class="card"><h2>Ryzyko usługi w czasie</h2>
+      <div class="placeholder tall" id="chart-service-risk">📈 Wykres po wybraniu usługi<code>TODO: GET /api/risk?service=...</code></div>
+    </div>
+    <div class="card"><h2>Zależności usług</h2>
+      <div class="placeholder tall" id="chart-service-deps">🕸️ Graf zależności (CDN → origin → auth …)<code>TODO</code></div>
+    </div>
+  </div>
+</main>
+
+<div id="site-footer"></div>
+<script src="../assets/app.js"></script>
+</body>
+</html>

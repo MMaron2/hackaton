@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>pulsewatch – Vendorzy</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-page="vendors" data-root="../">
+<div id="site-header"></div>
+
+<main>
+  <h1 class="page-title">Vendorzy i dostępność – problem u nas czy u vendora?</h1>
+
+  <div id="verdict-box" style="margin-bottom:16px"></div>
+
+  <div class="grid vendors" id="vendors-grid" style="margin-bottom:16px"></div>
+
+  <div class="grid cols-2">
+    <div class="card">
+      <h2>Wpływ vendorów na nasze usługi</h2>
+      <table>
+        <thead><tr><th>Vendor</th><th>Status</th><th>Powiązane usługi</th><th>Ocena wpływu</th></tr></thead>
+        <tbody id="vendor-impact"></tbody>
+      </table>
+    </div>
+    <div class="card">
+      <h2>Nasze sygnały (po naszej stronie)</h2>
+      <ul id="vendor-our-signals" style="margin:0;padding-left:18px;line-height:1.9"></ul>
+      <p class="muted small" style="margin-top:12px">Diagnoza porównuje metryki z playera (bitrate, błędy, rebuffering) ze statusem vendorów. Progi są ustawione w <code>assets/app.js</code>.</p>
+    </div>
+  </div>
+
+  <div class="grid cols-2" style="margin-top:16px">
+    <div class="card"><h2>Dostępność vendorów w czasie</h2>
+      <div class="placeholder" id="chart-vendor-availability">📈 Dostępność i latency per vendor (30 dni)<code>TODO: GET /api/vendors/availability</code></div>
+    </div>
+    <div class="card"><h2>Korelacja: incydenty vendora vs nasze metryki</h2>
+      <div class="placeholder" id="chart-vendor-correlation">🔗 Nałożone osie czasu: status vendora vs bitrate / błędy playera<code>TODO</code></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px"><h2>Źródła danych o statusie vendorów</h2>
+    <p class="muted small" style="margin:0">Docelowo: AWS Health API, Statuspage / RSS stron statusu vendorów oraz własne health-checki (syntetyczne testy z kilku regionów). Dzięki własnym testom wykryjemy problem, zanim vendor go oficjalnie ogłosi.</p>
+  </div>
+</main>
+
+<div id="site-footer"></div>
+<script src="../assets/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>pulsewatch – Player</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-page="player" data-root="../">
+<div id="site-header"></div>
+
+<main>
+  <h1 class="page-title">Telemetria playera</h1>
+  <div class="grid kpis">
+    <div class="card kpi"><h2>Rebuffering ratio</h2><div class="value warn" id="pl-rebuf">--</div><div class="sub">czas buforowania / czas oglądania</div></div>
+    <div class="card kpi"><h2>Startup time (p95)</h2><div class="value" id="pl-startup">--</div><div class="sub">kliknięcie play → pierwsza klatka</div></div>
+    <div class="card kpi"><h2>Śr. bitrate</h2><div class="value" id="pl-bitrate">--</div><div class="sub">adaptive streaming (ABR)</div></div>
+    <div class="card kpi"><h2>Błędy odtwarzania</h2><div class="value crit" id="pl-errors">--</div><div class="sub">% sesji z błędem</div></div>
+    <div class="card kpi"><h2>Aktywne sesje</h2><div class="value" id="pl-sessions">--</div><div class="sub">równoległych widzów</div></div>
+  </div>
+
+  <div class="grid cols-2">
+    <div class="card">
+      <h2>Podgląd playera <span class="badge-src">źródło: telemetria playera</span></h2>
+      <div class="player">
+        <span class="live">● LIVE</span>
+        <div class="hud" id="player-hud">res: --<br>bitrate: --<br>buffer: --<br>dropped: --</div>
+        <div class="play">▶</div>
+        <div class="controls"><span>▶</span><div class="bar"><div class="buf"></div><div class="pos"></div></div><span>01:12:45</span><span>🔊 ⚙ ⛶</span></div>
+      </div>
+      <p style="color:var(--muted);font-size:12px;margin:10px 0 0">Tu można osadzić prawdziwy player (np. hls.js / Shaka / Video.js) i zbierać zdarzenia: <code>waiting</code>, <code>stalled</code>, <code>error</code>, zmiany jakości.</p>
+    </div>
+    <div class="card">
+      <h2>Zdarzenia playera (live)</h2>
+      <div id="player-events" style="font:12px/1.7 Consolas,monospace;max-height:330px;overflow:auto"></div>
+    </div>
+  </div>
+
+  <div class="grid cols-3">
+    <div class="card"><h2>Rebuffering w czasie</h2><div class="placeholder" id="chart-player-rebuf">📉 Wykres<code>TODO: GET /api/player/rebuffering</code></div></div>
+    <div class="card"><h2>Bitrate / zmiany jakości</h2><div class="placeholder" id="chart-player-bitrate">📉 Wykres<code>TODO: GET /api/player/bitrate</code></div></div>
+    <div class="card"><h2>Błędy wg CDN / regionu / urządzenia</h2><div class="placeholder" id="chart-player-errors">📊 Wykres<code>TODO: GET /api/player/errors</code></div></div>
+  </div>
+</main>
+
+<div id="site-footer"></div>
+<script src="../assets/app.js"></script>
+</body>
+</html>

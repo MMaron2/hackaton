@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>pulsewatch – Incydenty</title>
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body data-page="incidents" data-root="../">
+<div id="site-header"></div>
+
+<main>
+  <h1 class="page-title">Incydenty</h1>
+  <div class="card" style="margin-bottom:16px">
+    <h2>Historia incydentów</h2>
+    <table>
+      <thead><tr><th>ID</th><th>Usługa</th><th>Start</th><th>Wykrycie</th><th>Severity</th><th>Wykryłby model?</th></tr></thead>
+      <tbody id="incidents-table"></tbody>
+    </table>
+  </div>
+  <div class="card"><h2>Odtworzenie incydentu (replay)</h2>
+    <div class="placeholder tall" id="app-replay">▶️ Odtwarzacz historycznego incydentu: moment alarmu modelu vs zgłoszenia użytkowników<code>TODO: aplikacja webowa / iframe</code></div>
+  </div>
+</main>
+
+<div id="site-footer"></div>
+<script src="../assets/app.js"></script>
+</body>
+</html>
