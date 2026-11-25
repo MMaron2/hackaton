@@ -1,0 +1,22 @@
+.clock { font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+.layout { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+@media (max-width: 1150px) { .layout { grid-template-columns: 1fr; } }
+.svc { background: var(--panel2); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
+.svc.degraded { border-color: var(--warn); background: var(--warn-bg); } .svc.down { border-color: var(--bad); background: var(--bad-bg); }
+.svc .top { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; } .svc .top strong { flex: 1; }
+.svc .nums { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; font-variant-numeric: tabular-nums; margin: 6px 0; }
+.svc .nums b { display: block; font-size: 15px; } .svc .nums span { font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+.hosts { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+.host { font-size: 11px; padding: 2px 8px; border-radius: 6px; background: var(--panel); border: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+.host.hot { border-color: var(--warn); color: var(--warn); } .host.down { border-color: var(--bad); color: var(--bad); text-decoration: line-through; }
+.scale { display: flex; gap: 4px; align-items: center; margin-top: 8px; font-size: 11px; color: var(--muted); }
+.vend { background: var(--panel2); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; }
+.vend .row { display: flex; justify-content: space-between; font-size: 12px; margin: 3px 0; }
+.form .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; } .form .row.one { grid-template-columns: 1fr; }
+.fail { display: flex; gap: 10px; align-items: center; padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; margin-bottom: 8px; background: var(--panel2); }
+.fail.active { border-color: var(--bad); background: var(--bad-bg); } .fail .t { flex: 1; font-size: 13px; } .fail .t small { display: block; color: var(--muted); }
+.scen { display: grid; grid-template-columns: 1fr; gap: 6px; } .scen .btn { text-align: left; }
+.ev { display: flex; justify-content: space-between; gap: 8px; font-size: 12.5px; padding: 5px 0; border-bottom: 1px solid var(--line); }
+.toggles { display: flex; flex-wrap: wrap; gap: 8px; }
+.spark { width: 100%; height: 34px; display: block; }
+.stack > * + * { margin-top: 16px; }

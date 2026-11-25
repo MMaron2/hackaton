@@ -1,0 +1,10 @@
+﻿incydent,prio,zgloszenie,przyczyna_jira,odniesienie_poczatku,okno_pelne_metryki,ludzie_wykrycie_min,ludzie_potwierdzenie_min,hub_pierwszy_sygnal_min,hub_pager_min,hub_wczesniej_o_min,model_nr_pierwszy_sygnal_min,hub_hipoteza,incydenty_poza_oknem_awarii
+AIIT-2686,P1,Manual,System,właściciel danych,True,97,97,10,20,87,10,"Dostawca: AWS Load Balancers (błędy 5xx, niezdrowe hosty)",0
+AIIT-2987,P1,Auto,Under investigation,Jira,True,-1,5,0,0,-1,0,"Przeciążenie lub awaria serwerów (VAF, EKS)",0
+AIIT-3006,P2,Auto,Vendor,Jira,False,0,5,,,,,,0
+AIIT-3017,P2,Manual,Under investigation,Jira,False,0,14,,,,,,0
+AIIT-3104,P1,Manual,Infrastructure - External,Jira,False,0,120,,,,,,0
+AIIT-3133,P1,Manual,Vendor,Jira,False,0,31,,,,,,0
+AIIT-3139,P1,Manual,Infrastructure,Jira,False,25,25,,,,,,0
+MIT-31,P1,Manual,CMS CUE,Jira,True,21,35,75,85,-54,,Dostawca: AWS CloudFront (CDN),1
+MIT-36,P2,Manual,Vendor,Jira,False,20,70,,,,,,0

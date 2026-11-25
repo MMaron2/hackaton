@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="pl" class="auto">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Generator awarii</title>
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/gen.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><div class="logo">⚡</div><div>Generator awarii<small>symulowana platforma i wstrzykiwanie usterek</small></div></div>
+    <span class="pill sim">SYMULACJA</span>
+    <div class="spacer"></div>
+    <div class="clock" id="clock">--:--</div>
+    <div class="seg" id="speed"></div>
+    <button class="btn" id="pause">❚❚ Pauza</button>
+    <button class="btn" id="reset">↺ Reset</button>
+  </header>
+  <main class="page" id="app"><div class="empty">Łączenie z symulatorem…</div></main>
+  <div id="tip" class="tip" hidden></div>
+  <script src="js/gen.js"></script>
+</body>
+</html>

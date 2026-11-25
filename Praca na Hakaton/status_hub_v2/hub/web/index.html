@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pl" class="auto">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Status Hub</title>
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/hub.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><div class="logo">◉</div><div>Status Hub<small>centrum dowodzenia platformą</small></div></div>
+    <span class="pill live"><span class="dot pulse" style="background:#fff;width:7px;height:7px"></span>NA ŻYWO</span>
+    <span class="pill" id="conn">łączenie…</span>
+    <nav class="tabs" id="tabs"><a href="#/dashboard" data-v="dashboard">Dashboard</a><a href="#/model" data-v="model">Model obciążenia</a><a href="#/nr" data-v="nr">Model z danych NR</a><a href="#/progi" data-v="progi">Progi</a><a href="#/zrodla" data-v="zrodla">Źródła</a></nav>
+    <div class="spacer"></div>
+    <span id="demo-ctl" hidden><label class="chk"><input type="checkbox" id="t-demo" checked> Demo: pokaż prawdę z generatora</label>
+    <label class="chk"><input type="checkbox" id="t-auto"> Symuluj dyżurnego</label></span>
+    <div class="clock" id="clock">--:--</div>
+  </header>
+  <main class="page" id="app"><div class="empty">Łączenie z Hubem…</div></main>
+  <div id="tip" class="tip" hidden></div>
+  <script src="js/hub.js"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./start_all.command --no-open)",
+      "Bash(pdfinfo /Users/mmaron/Downloads/Konspekt_rozmowy.pdf)",
+      "Bash(pdftotext -layout /Users/mmaron/Downloads/Konspekt_rozmowy.pdf -)"
+    ]
+  }
+}

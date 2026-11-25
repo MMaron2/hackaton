@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pl" class="auto">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Status Hub: pokaz na prawdziwych danych</title>
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/hub.css">
+  <link rel="stylesheet" href="css/demo.css">
+  <link rel="stylesheet" href="css/external.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><div class="logo">◉</div><div>Status Hub<small>pokaz na danych New Relic</small></div></div>
+    <span class="pill live" id="modepill"><span class="dot pulse" style="background:#fff;width:7px;height:7px"></span><span id="modetxt">ODTWARZANIE</span></span>
+    <nav class="tabs" id="tabs"><a href="#/dashboard" data-v="dashboard">Dashboard</a><a href="#/uslugi" data-v="uslugi">Usługi zewnętrzne</a><a href="#/nr" data-v="nr">Model z danych NR</a><a href="#/progi" data-v="progi">Progi</a><a href="#/dane" data-v="dane">Dane i źródła</a></nav>
+    <div class="spacer"></div>
+    <div class="clock" id="clock">--:--</div>
+  </header>
+  <div class="ctlbar" id="ctl" hidden>
+    <span class="seg" id="src" title="Źródło danych dla dashboardu"><button data-m="replay">Odtwarzanie New Relic</button><button data-m="gen">Generator awarii</button></span>
+    <span class="ctlgrp" id="ctl-replay">
+      <select id="scen" title="Prawdziwy incydent z Jiry"></select>
+      <button class="btn" id="restart" title="Od początku okna">⏮</button>
+      <button class="btn" id="play">❚❚ Pauza</button>
+      <span class="seg" id="speed"><button data-s="60">60×</button><button data-s="120">120×</button><button data-s="300">300×</button><button data-s="600">600×</button></span>
+      <div class="prog" id="prog"><div class="bar"><i id="prog-fill"></i><b id="prog-mark" title="Początek awarii wg Jiry"></b></div><span id="prog-txt" class="small muted"></span></div>
+      <label class="chk"><input type="checkbox" id="t-auto"> Symuluj dyżurnego</label>
+    </span>
+    <span class="ctlgrp" id="ctl-gen" hidden>
+      <a class="btn primary" id="gpanel" href="http://localhost:8641" target="_blank" rel="noopener">Panel generatora: wstrzykiwanie awarii ↗</a>
+      <span class="seg" id="gspeed" title="Prędkość symulacji generatora"><button data-s="1">1×</button><button data-s="10">10×</button><button data-s="60">60×</button><button data-s="300">300×</button></span>
+      <span id="gen-info" class="small muted"></span>
+      <label class="chk"><input type="checkbox" id="g-auto"> Symuluj dyżurnego</label>
+    </span>
+  </div>
+  <main class="page" id="app"><div class="empty">Łączenie z Hubem…</div></main>
+  <script src="js/hub.js"></script>
+</body>
+</html>
