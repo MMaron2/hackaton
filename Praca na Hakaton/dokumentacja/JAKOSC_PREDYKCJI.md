@@ -2,7 +2,7 @@
 
 > Created using Anthropic Claude. Wersja robocza, wewnętrzna do czasu weryfikacji przez człowieka. Liczby poniżej to ilustracja na 9 incydentach, a nie dowód statystyczny: nie przedstawiaj ich jako ostatecznych faktów ani gwarancji skuteczności. Udostępniaj tylko osobom uprawnionym do danych źródłowych (New Relic, Jira).
 
-Wszystkie liczby z sekcji 2–6 pochodzą ze skryptu [analiza_jakosci.py](status_hub_v3/analiza_jakosci.py) (uruchomienie: `python3 status_hub_v3/analiza_jakosci.py --csv wyniki.csv`), który czyta `data/replay.json` i `data/nr_model.json` i uruchamia silnik Huba na całym oknie każdego incydentu, bez udziału człowieka. Wyniki per incydent są też w [wyniki_jakosci.csv](wyniki_jakosci.csv).
+Wszystkie liczby z sekcji 2–6 pochodzą ze skryptu [analiza_jakosci.py](../status_hub_v3/analiza_jakosci.py) (uruchomienie: `python3 status_hub_v3/analiza_jakosci.py --csv wyniki.csv`), który czyta `data/replay.json` i `data/nr_model.json` i uruchamia silnik Huba na całym oknie każdego incydentu, bez udziału człowieka. Wyniki per incydent są też w [wyniki_jakosci.csv](wyniki_jakosci.csv).
 
 ## 1. Najważniejsze wnioski
 

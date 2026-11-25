@@ -36,6 +36,21 @@ Z `--realtime` generator idzie w czasie rzeczywistym (1×), a jego zegar zgadza 
 | `status_hub_v3/` | aplikacja: serwer, silnik, interfejs, gotowe dane do odtwarzania (`data/replay.json`, `data/nr_model.json`), opis w `status_hub_v3/README.md` |
 | `status_hub_v2/` | aplikacja z generatorem awarii (`generator/`) i Hubem (`hub/`), model z danych NR (`nr/`), testy porównawcze (`tests/`) |
 | `prezentacja/` | prezentacja na 5 minut (`.pptx`), prompt do Copilota, zrzuty ekranu |
+| `dokumentacja/` | pełna dokumentacja (`DOKUMENTACJA.md`), jakość predykcji (`JAKOSC_PREDYKCJI.md`) i wyniki analizy (`wyniki_jakosci.csv`) |
+
+Skrypty `start_all.command` i `stop_all.command` zostają w głównym folderze, bo uruchamia się je dwuklikiem. Foldery aplikacji nie zmieniły położenia, więc ścieżki w skryptach i w kodzie działają bez zmian.
+
+## Dodatki interfejsu (InfoHub)
+
+Każda z trzech stron (pokazówka v3, Hub v2, panel generatora) ładuje te same trzy pliki dodatków ze swojego folderu `web/`:
+
+| Plik | Co robi |
+|---|---|
+| `web/css/infohub.css` | kolorystyka (tryb ciemny i jasny) oraz style narzędzi w nagłówku |
+| `web/js/infohub.js` | wyszukiwarka, dzwonek powiadomień z toastami, przełącznik motywu, podświetlanie znalezionego elementu |
+| `web/js/i18n.js` | przełącznik języka PL / EN / DE (słownik głównych napisów) |
+
+Dodatki nie zmieniają kodu aplikacji (`hub.js`, `gen.js`) ani układu okien. Dane biorą z tych samych połączeń, których używa aplikacja. Pliki są w trzech kopiach, bo każdy serwer podaje tylko własny folder `web/`; po zmianie trzeba skopiować plik do pozostałych dwóch. Żeby wyłączyć dodatki, wystarczy usunąć trzy linie z `index.html` (jeden `<link>` i dwa `<script>`).
 
 ## Odbudowa danych (opcjonalnie)
 

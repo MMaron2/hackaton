@@ -6,6 +6,7 @@
   <title>Generator awarii</title>
   <link rel="stylesheet" href="css/common.css">
   <link rel="stylesheet" href="css/gen.css">
+  <link rel="stylesheet" href="css/infohub.css">
 </head>
 <body>
   <header class="topbar">
@@ -19,6 +20,9 @@
   </header>
   <main class="page" id="app"><div class="empty">Łączenie z symulatorem…</div></main>
   <div id="tip" class="tip" hidden></div>
+  <!-- Dodatki InfoHub (motyw, język, wyszukiwarka, powiadomienia): ładowane przed skryptem aplikacji, bo podsłuchują jej dane -->
+  <script src="js/i18n.js"></script>
+  <script src="js/infohub.js"></script>
   <script src="js/gen.js"></script>
 </body>
 </html>

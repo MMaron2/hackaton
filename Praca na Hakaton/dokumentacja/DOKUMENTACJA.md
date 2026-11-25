@@ -157,6 +157,7 @@ Fałszywe alerty kart: 0,4–1,9 epizodu na dobę w oknach CUE i 0,1 na dobę w 
 | `status_hub_v3/` | pokazówka: `server/` (serwer, silnik, moduł statusów dostawców), `web/` (interfejs), `data/` (gotowy `replay.json`, `nr_model.json`), `build_replay.py` |
 | `status_hub_v2/` | generator awarii (`generator/`), Hub z silnikiem i modelem (`hub/`), model z danych NR (`nr/`), testy (`tests/`) |
 | `prezentacja/` | prezentacja na 5 minut (`.pptx`), prompt do Copilota, zrzuty ekranu |
+| `dokumentacja/` | ten dokument, `JAKOSC_PREDYKCJI.md` i wyniki analizy jakości (`wyniki_jakosci.csv`) |
 | `logs/` | logi aplikacji uruchomionych przez `start_all` |
 
 `data/replay.json` jest gotowy. Jego odbudowa (`build_replay.py`) wymaga pandas i oczyszczonego eksportu, którego nie ma w tym folderze.

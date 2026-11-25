@@ -1,0 +1,76 @@
+/* Dodatki InfoHub (z folderu Oskar) nałożone na Status Hub v3.
+   Ten plik zmienia tylko kolory (zmienne z common.css) i dokłada style nowych elementów w nagłówku.
+   Układ strony, okna i wykresy zostają tam, gdzie były. Usunięcie tego pliku i infohub.js przywraca oryginalny wygląd. */
+
+/* ---------- kolorystyka InfoHub: ciemna (domyślna) i jasna ---------- */
+:root {
+  --bg: #030b18; --panel: #0d1b33; --panel2: #14274a; --line: #213559; --ink: #e6eefb; --muted: #9fb4d1; --accent: #56b9f2;
+  --ok: #3bd39b; --warn: #f0b445; --bad: #f47070; --info: #7aa2ff;
+  --ok-bg: rgba(59, 211, 155, .13); --warn-bg: rgba(240, 180, 69, .14); --bad-bg: rgba(244, 112, 112, .15); --info-bg: rgba(122, 162, 255, .14);
+  --ih-grad: linear-gradient(160deg, #020812 0%, #04142c 55%, #072650 100%); --ih-on-accent: #03182f;
+}
+:root.light {
+  --bg: #e6f2ff; --panel: #ffffff; --panel2: #f1f8ff; --line: #bcd8f2; --ink: #0a2342; --muted: #4a6788; --accent: #0a6fd1;
+  --ok: #0b8f64; --warn: #a85f00; --bad: #cf2f2f; --info: #3a63d6;
+  --ok-bg: rgba(11, 143, 100, .1); --warn-bg: rgba(168, 95, 0, .12); --bad-bg: rgba(207, 47, 47, .1); --info-bg: rgba(58, 99, 214, .1);
+  --shadow: 0 4px 18px rgba(20, 80, 160, .14);
+  --ih-grad: linear-gradient(160deg, #f4faff 0%, #d6ebff 55%, #a9d3fb 100%); --ih-on-accent: #ffffff;
+}
+body { background: var(--ih-grad) fixed; background-color: var(--bg); }
+.btn.primary, .btn.on, .seg button.on { color: var(--ih-on-accent); }
+
+/* ---------- narzędzia w nagłówku: wyszukiwarka, dzwonek, język, motyw ---------- */
+.ih-tools { display: flex; align-items: center; gap: 10px; }
+.ih-ic { width: 18px; height: 18px; flex: none; display: block; }
+.ih-wrap { position: relative; }
+.ih-search { display: flex; align-items: center; gap: 8px; width: 230px; padding: 0 10px; background: var(--panel2); border: 1px solid var(--line); border-radius: 9px; color: var(--muted); }
+.ih-search:focus-within { border-color: var(--accent); }
+.ih-search input { flex: 1; min-width: 0; font: inherit; color: var(--ink); background: transparent; border: 0; outline: 0; padding: 7px 0; }
+.ih-btn { position: relative; display: inline-flex; align-items: center; justify-content: center; font: inherit; color: var(--ink); background: var(--panel2); border: 1px solid var(--line); border-radius: 9px; padding: 7px 9px; cursor: pointer; }
+.ih-btn:hover, .ih-lang:hover { border-color: var(--accent); }
+.ih-count { position: absolute; top: -7px; right: -7px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 9px; background: var(--bad); color: #fff; font-size: 10.5px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.ih-count[hidden], .ih-drop[hidden] { display: none; }
+.ih-lang { font: inherit; font-weight: 700; font-size: 12.5px; color: var(--ink); background: var(--panel2); border: 1px solid var(--line); border-radius: 9px; padding: 7px 6px; cursor: pointer; }
+
+/* listy rozwijane */
+.ih-drop { position: absolute; top: calc(100% + 8px); right: 0; z-index: 70; width: 380px; max-height: 440px; overflow: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 12px 34px rgba(0, 0, 0, .45); animation: ih-drop .18s ease; }
+@keyframes ih-drop { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+.ih-item { display: flex; gap: 10px; align-items: flex-start; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: 13px; color: var(--ink); cursor: pointer; text-decoration: none; }
+.ih-item:last-child { border-bottom: 0; }
+.ih-item:hover { background: var(--panel2); }
+.ih-item small { color: var(--muted); }
+.ih-tag { flex: none; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--accent); border: 1px solid var(--accent); border-radius: 8px; padding: 1px 6px; margin-top: 2px; }
+.ih-lv { flex: none; width: 9px; height: 9px; margin-top: 5px; border-radius: 50%; background: var(--info); }
+.ih-lv.warn { background: var(--warn); } .ih-lv.bad { background: var(--bad); } .ih-lv.ok { background: var(--ok); }
+.ih-head, .ih-foot { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 14px; font-size: 13px; }
+.ih-head { border-bottom: 1px solid var(--line); } .ih-foot { color: var(--muted); font-size: 12px; }
+.ih-link { font: inherit; font-size: 12px; color: var(--accent); background: none; border: 0; cursor: pointer; padding: 0; }
+.ih-empty { padding: 16px; color: var(--muted); font-size: 13px; }
+
+/* toasty */
+#ih-toasts { position: fixed; right: 20px; bottom: 20px; z-index: 90; display: flex; flex-direction: column; gap: 10px; }
+.ih-toast { display: flex; gap: 10px; width: 340px; padding: 12px 14px; font-size: 13px; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-left: 5px solid var(--info); border-radius: 10px; box-shadow: 0 10px 28px rgba(0, 0, 0, .45); cursor: pointer; animation: ih-drop .2s ease; }
+.ih-toast.warn { border-left-color: var(--warn); } .ih-toast.bad { border-left-color: var(--bad); } .ih-toast.ok { border-left-color: var(--ok); }
+.ih-toast small { color: var(--muted); }
+
+/* podświetlenie znalezionego elementu (ramka nakładana na wierzch, bo treść odświeża się co chwilę) */
+.ih-flash { position: fixed; z-index: 80; pointer-events: none; border: 3px solid var(--accent); border-radius: 12px; animation: ih-blink .5s ease-in-out 3; }
+@keyframes ih-blink { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
+
+/* płynne przejście przy zmianie zakładki i rozwijaniu dostawcy */
+.page.ih-enter { animation: ih-page .3s ease both; }
+@keyframes ih-page { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+details.xp[open] > .xbody { animation: ih-drop .22s ease; }
+
+/* klikalne liczniki w banerze stanu */
+.banner .stats > div { cursor: pointer; border-radius: 8px; transition: background .15s ease; }
+.banner .stats > div:hover { background: color-mix(in srgb, var(--ink) 10%, transparent); }
+
+@media (max-width: 1250px) { .ih-search { width: 170px; } }
+@media (max-width: 760px) { .ih-tools { flex-wrap: wrap; } .ih-drop { width: min(380px, 92vw); } }
+@media (prefers-reduced-motion: reduce) { .page.ih-enter, .ih-drop, .ih-toast, details.xp[open] > .xbody { animation: none; } }
+
+/* Wąskie pole szukania, żeby narzędzia mieściły się w jednym wierszu nagłówka; rozszerza się po kliknięciu */
+.ih-search { width: 150px; transition: width .18s ease; }
+.ih-search:focus-within { width: 240px; }
+@media (max-width: 1250px) { .ih-search { width: 120px; } }
